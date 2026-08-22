@@ -4,9 +4,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class User extends Model {
         static associate(models) {
-            if (models.Order) {
-                User.hasMany(models.Order, { foreignKey: "userId", as: "orders" });
-            }
             if (models.RefreshToken) {
                 User.hasOne(models.RefreshToken, { foreignKey: "userId", as: "refreshToken" });
             }
@@ -34,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         role: {
             type: DataTypes.STRING,
-            defaultValue: "User",
+            defaultValue: "User", // User, Artist, Admin
         },
         otpCode: {
             type: DataTypes.STRING,
