@@ -9,8 +9,8 @@ const createArtist = async (userId, artistData) => {
     });
 }
 
-const updateArtist = async (artistId, artistData) => {
-    return await Artist.update(artistData, { where: { id: artistId } });
+const updateArtist = async (artistId, artistData, options = {}) => {
+    return await Artist.update(artistData, { where: { id: artistId }, ...options });
 }
 
 const getArtistById = async (artistId) => {

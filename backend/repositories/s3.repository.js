@@ -1,4 +1,4 @@
-const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const { PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const s3Client = require("../config/s3");
 
 const uploadFile = async (fileBuffer, fileName, mimeType) => {
@@ -22,7 +22,6 @@ const uploadFile = async (fileBuffer, fileName, mimeType) => {
 
     try {
         const command = new PutObjectCommand(params);
-
         await s3Client.send(command);
 
         return `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`;
@@ -31,6 +30,27 @@ const uploadFile = async (fileBuffer, fileName, mimeType) => {
     }
 };
 
+const deleteFile = async (fileName) => {
+    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    if (!bucketName) {
+        throw new Error("AWS_S3_BUCKET_NAME không được cấu hình");
+    }
+
+    const params = {
+        Bucket: bucketName,
+        Key: fileName
+    };
+
+    try {
+        const command = new DeleteObjectCommand(params);
+        await s3Client.send(command);
+        return true;
+    } catch (error) {
+        throw new Error(`S3 xóa file thất bại: ${error.message}`);
+    }
+};
+
 module.exports = {
-    uploadFile
+    uploadFile,
+    deleteFile
 };

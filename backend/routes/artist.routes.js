@@ -5,9 +5,10 @@ const { authenticate } = require("../middlewares/auth.middleware");
 const { upload } = require("../middlewares/upload.middleware");
 
 const {
-    validateCreateArtist
+    validateArtist
 } = require("../validators/artist.validator");
 
-router.post("/register", authenticate, upload.single("image"), validateCreateArtist, artistController.createArtist)
+router.post("/register", authenticate, upload.single("image"), validateArtist, artistController.createArtist)
+router.put("/update/:artistId", authenticate, upload.single("image"), validateArtist, artistController.updateArtist)
 
 module.exports = router

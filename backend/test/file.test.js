@@ -47,7 +47,7 @@ describe("File Upload and S3 Repository", () => {
             const mimeType = "image/png";
 
             await expect(s3Repository.uploadFile(buffer, fileName, mimeType))
-                .rejects.toThrow("AWS_S3_BUCKET_NAME is not configured");
+                .rejects.toThrow("AWS_S3_BUCKET_NAME không được cấu hình");
         });
 
         it("should propagate S3 SDK errors", async () => {
@@ -58,7 +58,32 @@ describe("File Upload and S3 Repository", () => {
             const mimeType = "image/png";
 
             await expect(s3Repository.uploadFile(buffer, fileName, mimeType))
-                .rejects.toThrow("S3 upload failed: AWS Connection Error");
+                .rejects.toThrow("S3 tải file thất bại: AWS Connection Error");
+        });
+    });
+
+    describe("s3.repository - deleteFile", () => {
+        it("should delete an object from S3 successfully", async () => {
+            s3Client.send.mockResolvedValue({});
+
+            const result = await s3Repository.deleteFile("images/test-file.png");
+
+            expect(s3Client.send).toHaveBeenCalled();
+            expect(result).toBe(true);
+        });
+
+        it("should throw an error if AWS_S3_BUCKET_NAME is missing on delete", async () => {
+            delete process.env.AWS_S3_BUCKET_NAME;
+
+            await expect(s3Repository.deleteFile("images/test-file.png"))
+                .rejects.toThrow("AWS_S3_BUCKET_NAME không được cấu hình");
+        });
+
+        it("should propagate S3 SDK errors on delete", async () => {
+            s3Client.send.mockRejectedValue(new Error("Access Denied"));
+
+            await expect(s3Repository.deleteFile("images/test-file.png"))
+                .rejects.toThrow("S3 xóa file thất bại: Access Denied");
         });
     });
 
@@ -77,7 +102,7 @@ describe("File Upload and S3 Repository", () => {
 
             expect(uploadFileSpy).toHaveBeenCalledWith(
                 mockFile.buffer,
-                expect.stringMatching(/^images\/\d+-[a-f0-9]+\.png$/),
+                expect.stringMatching(/^images\/[a-f0-9-]{36}\.jpg$/),
                 "image/png"
             );
             expect(result).toEqual("https://test-bucket.s3.us-east-1.amazonaws.com/images/random-name.png");
@@ -88,6 +113,24 @@ describe("File Upload and S3 Repository", () => {
         it("should throw error if file is missing", async () => {
             await expect(fileService.uploadImage(null))
                 .rejects.toThrow("Không có file nào được tải lên");
+        });
+    });
+
+    describe("file.service - deleteImage", () => {
+        it("should parse S3 URL and delete file", async () => {
+            const deleteFileSpy = jest.spyOn(s3Repository, "deleteFile").mockResolvedValue(true);
+
+            const result = await fileService.deleteImage("https://test-bucket.s3.us-east-1.amazonaws.com/images/test.jpg");
+
+            expect(deleteFileSpy).toHaveBeenCalledWith("images/test.jpg");
+            expect(result).toBe(true);
+
+            deleteFileSpy.mockRestore();
+        });
+
+        it("should return false if url is null or invalid", async () => {
+            expect(await fileService.deleteImage(null)).toBe(false);
+            expect(await fileService.deleteImage("https://invalid-url.com")).toBe(false);
         });
     });
 });
