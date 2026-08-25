@@ -1,6 +1,7 @@
-const ArtistRepository = require("../repositories/artistRepository");
+const ArtistRepository = require("../repositories/artist.repository");
+const FileService = require("./file.service");
 
-const createArtist = async (userId, artistData) => {
+const createArtist = async (userId, artistData, imageFile) => {
     if (userId) {
         const existingArtistByUserId = await ArtistRepository.getArtistByUserId(userId);
         if (existingArtistByUserId)
@@ -11,7 +12,14 @@ const createArtist = async (userId, artistData) => {
     if (existingArtist)
         throw new Error("Tên nghệ sĩ đã tồn tại")
 
-    const artist = await ArtistRepository.createArtist(userId, artistData);
+    let imageUrl = null;
+
+    if (imageFile) {
+        imageUrl = await FileService.uploadImage(imageFile);
+        console.log("Image url from file service: " + imageUrl);
+    }
+
+    const artist = await ArtistRepository.createArtist(userId, { ...artistData, imageUrl });
     return artist;
 }
 

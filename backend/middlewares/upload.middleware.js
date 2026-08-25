@@ -1,6 +1,4 @@
 const multer = require('multer');
-const s3Client = require('../config/s3');
-const { Upload } = require('@aws-sdk/lib-storage');
 
 const fileFilter = (req, file, cb) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];

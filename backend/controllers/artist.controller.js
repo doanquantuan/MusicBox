@@ -1,9 +1,9 @@
-const artistService = require("../services/artistService");
+const artistService = require("../services/artist.service");
 
 const createArtist = async (req, res) => {
     try {
         const userId = req.user.id;
-        const artist = await artistService.createArtist(userId, req.body);
+        const artist = await artistService.createArtist(userId, req.body, req.file);
         return res.status(201).json({
             success: true,
             message: "Tạo nghệ sĩ thành công",

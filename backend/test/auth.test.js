@@ -1,11 +1,17 @@
 import request from "supertest";
 import app from "../server";
-import authService from "../services/authService";
-import otpService from "../services/otpService";
+import authService from "../services/auth.service";
+import otpService from "../services/otp.service";
 
 // Mock the service layer to isolate controller and router testing
-jest.mock("../services/authService");
-jest.mock("../services/otpService");
+jest.mock("../services/auth.service");
+jest.mock("../services/otp.service");
+jest.mock("../middlewares/auth.middleware", () => ({
+    authenticate: (req, res, next) => {
+        req.user = { id: 1, name: "Test User", email: "test@example.com" };
+        next();
+    }
+}));
 
 describe("Auth API Endpoints", () => {
     afterEach(() => {

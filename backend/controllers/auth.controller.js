@@ -1,5 +1,5 @@
-const authService = require("../services/authService");
-const otpService = require("../services/otpService");
+const authService = require("../services/auth.service");
+const otpService = require("../services/otp.service");
 
 const login = async (req, res) => {
     try {
@@ -156,7 +156,7 @@ const resendOtp = async (req, res) => {
         const user = await otpService.resendOtp(email);
         
         // Resend email
-        const emailService = require("../services/emailService");
+        const emailService = require("../services/email.service");
         await emailService.sendOtpEmail(user.email, user.otpCode, 'verify-email');
 
         return res.status(200).json({
