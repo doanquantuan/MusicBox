@@ -15,18 +15,18 @@ const sendOtpEmail = async (email, otp, type) => {
     let title;
 
     if (type === 'forgot-password') {
-        subject = 'BakeHouse - Mã OTP đặt lại mật khẩu';
+        subject = 'MusicBox - Mã OTP đặt lại mật khẩu';
         title = 'Đặt lại mật khẩu';
     } else if (type === 'verify-email') {
-        subject = 'BakeHouse - Xác thực email';
+        subject = 'MusicBox - Xác thực email';
         title = 'Xác thực email';
     } else {
-        subject = 'BakeHouse - Mã OTP';
+        subject = 'MusicBox - Mã OTP';
         title = 'Mã xác thực';
     }
 
     await transporter.sendMail({
-        from: `"BakeHouse" <${process.env.MAIL_FROM}>`,
+        from: `"MusicBox" <${process.env.MAIL_FROM}>`,
         to: email,
         subject,
 

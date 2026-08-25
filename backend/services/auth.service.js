@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const db = require("../models");
-const otpService = require("./otpService");
-const emailService = require("./emailService");
-const tokenService = require("./tokenService");
+const otpService = require("./otp.service");
+const emailService = require("./email.service");
+const tokenService = require("./token.service");
 
 const User = db.User;
 const RefreshToken = db.RefreshToken;
@@ -153,7 +153,7 @@ const refreshAccessToken = async (token) => {
 
 const forgotPassword = async (email) => {
     const normalizedEmail = email.toLowerCase().trim();
-    
+
     // Check if user exists
     const existingUser = await User.findOne({ where: { email: normalizedEmail } });
     if (!existingUser) {
