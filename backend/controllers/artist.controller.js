@@ -2,6 +2,7 @@ const artistService = require("../services/artist.service");
 
 const createArtist = async (req, res) => {
     try {
+        console.log("req.body", req.body);
         const userId = req.user.id;
         const artist = await artistService.createArtist(userId, req.body, req.file);
         return res.status(201).json({

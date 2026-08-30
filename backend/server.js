@@ -7,6 +7,8 @@ import { connectDB } from "./config/configdb.js";
 import db from "./models/index.js";
 import authRoutes from "./routes/auth.routes.js";
 import artistRoutes from "./routes/artist.routes.js";
+import genreRoutes from "./routes/genre.route.js";
+import songRoutes from "./routes/song.route.js";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
@@ -34,6 +36,8 @@ if (process.env.NODE_ENV !== 'test') {
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/artist", artistRoutes);
+app.use("/api/genre", genreRoutes);
+app.use("/api/song", songRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

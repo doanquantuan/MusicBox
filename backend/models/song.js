@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     class Song extends Model {
         static associate(models) {
             Song.belongsTo(models.Album, { foreignKey: 'albumId' });
-            Song.belongsToMany(models.Artist, { foreignKey: 'songId', otherKey: 'artistId', through: 'song_artists', as: 'artists' });
+            Song.belongsTo(models.Artist, { foreignKey: 'artistId' });
             Song.belongsTo(models.Genre, { foreignKey: 'genreId' });
         }
     }
@@ -27,6 +27,13 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id',
             }
         },
+        artistId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'artists',
+                key: 'id',
+            }
+        },
         genreId: {
             type: DataTypes.INTEGER,
             references: {
@@ -40,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         releaseDate: {
             type: DataTypes.DATE,
-            allowNull: false,
+            allowNull: true,
         },
         coverImgUrl: {
             type: DataTypes.STRING,
@@ -48,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         audioUrl: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         playCount: {
             type: DataTypes.INTEGER,
