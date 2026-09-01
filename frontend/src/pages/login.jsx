@@ -1,8 +1,13 @@
 import Background from "../components/layout/background";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { notification } from "antd";
+import { apiLogin } from "../util/api";
 
 const LoginPage = () => {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
@@ -27,13 +32,43 @@ const LoginPage = () => {
         return errs;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const errs = validate();
         setErrors(errs);
 
         if (Object.keys(errs).length === 0) {
-            console.log(formData.email, formData.password);
+            setLoading(true);
+            try {
+                const res = await apiLogin(formData.email, formData.password);
+
+                if (res && res.success) {
+                    // Lưu token (nếu backend chưa thiết lập cookie, hoặc để dùng riêng)
+                    if (res.data.accessToken) {
+                        localStorage.setItem("access_token", res.data.accessToken);
+                    }
+
+                    notification.success({
+                        message: "Thành công",
+                        description: res.message || "Đăng nhập thành công",
+                    });
+
+                    // Chuyển hướng trang sau khi login
+                    navigate("/"); // Điều hướng về trang chủ
+                } else {
+                    notification.error({
+                        message: "Đăng nhập thất bại",
+                        description: "Email hoặc mật khẩu không chính xác",
+                    });
+                }
+            } catch (error) {
+                notification.error({
+                    message: "Lỗi",
+                    description: error.response?.data?.message || "Đã có lỗi xảy ra từ máy chủ",
+                });
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -44,32 +79,32 @@ const LoginPage = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
 
         // Validate realtime từng field
-        // setErrors((prev) => {
-        //     const newErrors = { ...prev };
+        setErrors((prev) => {
+            const newErrors = { ...prev };
 
-        //     if (name === "email") {
-        //         if (!value.trim()) {
-        //             newErrors.email = "Email is required";
-        //         } else if (!/\S+@\S+\.\S+/.test(value)) {
-        //             newErrors.email = "Invalid email address";
-        //         } else {
-        //             delete newErrors.email; // Đã đúng → ẩn lỗi
-        //         }
-        //     }
+            if (name === "email") {
+                if (!value.trim()) {
+                    newErrors.email = "Email is required";
+                } else if (!/\S+@\S+\.\S+/.test(value)) {
+                    newErrors.email = "Invalid email address";
+                } else {
+                    delete newErrors.email; // Đã đúng → ẩn lỗi
+                }
+            }
 
-        //     if (name === "password") {
-        //         if (!value) {
-        //             newErrors.password = "Password is required";
-        //         } else {
-        //             delete newErrors.password; // Đã đúng → ẩn lỗi
-        //         }
-        //     }
+            if (name === "password") {
+                if (!value) {
+                    newErrors.password = "Password is required";
+                } else {
+                    delete newErrors.password; // Đã đúng → ẩn lỗi
+                }
+            }
 
-        //     // Xóa lỗi chung khi người dùng bắt đầu sửa
-        //     delete newErrors.general;
+            // Xóa lỗi chung khi người dùng bắt đầu sửa
+            delete newErrors.general;
 
-        //     return newErrors;
-        // });
+            return newErrors;
+        });
     };
 
     const handleForgotPassword = () => {
@@ -111,8 +146,18 @@ const LoginPage = () => {
                         </button>
                     </div>
 
-                    <button type="submit" className="mt-2 w-full h-11 rounded-full text-white bg-indigo-600 hover:bg-indigo-500 transition " >
-                        Đăng nhập
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="mt-2 w-full h-11 rounded-full text-white bg-indigo-600 hover:bg-indigo-500 transition disabled:bg-indigo-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                        {loading && (
+                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V4a10 10 0 00-10 10h2zm2 5.291A7.962 7.962 0 014 12H2c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        )}
+                        {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                     </button>
                 </form>
 

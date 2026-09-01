@@ -21,6 +21,8 @@ const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
         });
 
+
+
         return res.status(200).json({
             success: true,
             message: "Đăng nhập thành công",
@@ -57,6 +59,8 @@ const refresh = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
+
+
         return res.status(200).json({
             success: true,
             message: "Lấy Access Token mới thành công",
@@ -83,6 +87,8 @@ const logout = async (req, res) => {
 
         // Clear HttpOnly cookie on client browser
         res.clearCookie('refreshToken');
+
+
 
         return res.status(200).json({
             success: true,
@@ -154,7 +160,7 @@ const resendOtp = async (req, res) => {
         }
 
         const user = await otpService.resendOtp(email);
-        
+
         // Resend email
         const emailService = require("../services/email.service");
         await emailService.sendOtpEmail(user.email, user.otpCode, 'verify-email');
