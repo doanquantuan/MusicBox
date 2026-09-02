@@ -9,14 +9,10 @@ const User = db.User;
 const RefreshToken = db.RefreshToken;
 
 const register = async (name, email, password) => {
-    const normalizedEmail = email
-        .toLowerCase()
-        .trim();
+    const normalizedEmail = email.toLowerCase().trim();
 
     const existingUser = await User.findOne({
-        where: {
-            email: normalizedEmail
-        }
+        where: { email: normalizedEmail }
     });
 
     if (existingUser) {
@@ -32,10 +28,18 @@ const register = async (name, email, password) => {
         isVerified: false
     });
 
+    // Tạo OTP
     const userWithOtp = await otpService.generateOtp(normalizedEmail);
 
-    await emailService.sendOtpEmail(normalizedEmail, userWithOtp.otpCode, 'verify-email');
+    // Gửi email ở background (không await)
+    emailService
+        .sendOtpEmail(normalizedEmail, userWithOtp.otpCode, 'verify-email')
+        .catch((err) => {
+            console.error("Gửi email OTP thất bại:", err);
+            // Có thể log vào hệ thống monitoring
+        });
 
+    // Trả về ngay lập tức, không đợi email
     return {
         id: user.id,
         name: user.name,

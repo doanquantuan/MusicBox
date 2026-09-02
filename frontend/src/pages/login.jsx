@@ -1,7 +1,7 @@
 import Background from "../components/layout/background";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { notification } from "antd";
 import { apiLogin } from "../util/api";
 
@@ -121,16 +121,13 @@ const LoginPage = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="flex items-center w-full mt-4 bg-white/5 ring-2 ring-white/10 focus-within:ring-indigo-500/60 h-12 rounded-full overflow-hidden pl-6 gap-2 transition-all ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-white/75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /> <rect x="2" y="4" width="20" height="16" rx="2" /> </svg>
+                        <Mail size={14} className="text-white/75 shrink-0" />
                         <input type="email" name="email" placeholder="Email" className="w-full bg-transparent text-white placeholder-white/60 border-none outline-none" value={formData.email} onChange={handleInputChange} required />
                     </div>
 
 
                     <div className="relative flex items-center mt-4 w-full bg-white/5 ring-2 ring-white/10 focus-within:ring-indigo-500/60 h-12 rounded-full pl-6 pr-12 gap-2 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-white/75 shrink-0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
+                        <Lock size={14} className="text-white/75 shrink-0" />
                         <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" className="w-full bg-transparent text-white placeholder-white/60 border-none outline-none" value={formData.password} onChange={handleInputChange} required />
 
                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition" >
@@ -149,21 +146,24 @@ const LoginPage = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="mt-2 w-full h-11 rounded-full text-white bg-indigo-600 hover:bg-indigo-500 transition disabled:bg-indigo-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="mt-2 w-full h-11 rounded-full text-white bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium"
                     >
-                        {loading && (
-                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V4a10 10 0 00-10 10h2zm2 5.291A7.962 7.962 0 014 12H2c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                        {loading ? (
+                            <>
+                                <Loader2 size={18} className="animate-spin" />
+                                <span>Đang đăng nhập...</span>
+                            </>
+                        ) : (
+                            "Đăng nhập"
                         )}
-                        {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                     </button>
                 </form>
 
                 <p className="text-gray-400 text-sm mt-3 mb-11 cursor-pointer" >
                     Bạn chưa có tài khoản?
-                    <span className="text-indigo-400 hover:underline ml-1">Đăng ký</span>
+                    <Link to="/register" className="text-indigo-400 hover:underline ml-1">
+                        Đăng ký
+                    </Link>
                 </p>
             </div>
         </div>
