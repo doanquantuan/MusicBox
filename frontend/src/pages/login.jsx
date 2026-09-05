@@ -43,9 +43,12 @@ const LoginPage = () => {
                 const res = await apiLogin(formData.email, formData.password);
 
                 if (res && res.success) {
-                    // Lưu token (nếu backend chưa thiết lập cookie, hoặc để dùng riêng)
+                    // Lưu token và thông tin người dùng (bao gồm role)
                     if (res.data.accessToken) {
                         localStorage.setItem("access_token", res.data.accessToken);
+                    }
+                    if (res.data.user) {
+                        localStorage.setItem("user", JSON.stringify(res.data.user));
                     }
 
                     notification.success({
@@ -53,8 +56,8 @@ const LoginPage = () => {
                         description: res.message || "Đăng nhập thành công",
                     });
 
-                    // Chuyển hướng trang sau khi login
-                    navigate("/"); // Điều hướng về trang chủ
+                    // Chuyển hướng về trang chủ
+                    navigate("/");
                 } else {
                     notification.error({
                         message: "Đăng nhập thất bại",

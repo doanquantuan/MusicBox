@@ -1,12 +1,9 @@
 import './App.css'
-import LoginPage from './pages/login'
-
+import HomePage from './pages/home'
 
 function App() {
-
-
   return (
-    <LoginPage />
+    <HomePage />
   )
 }
 

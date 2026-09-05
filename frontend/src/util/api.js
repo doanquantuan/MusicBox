@@ -16,9 +16,19 @@ const apiResendOtp = (email) => {
     return axios.post("api/auth/resend-otp", { email });
 };
 
+const apiGetAccount = () => {
+    return axios.get("api/auth/me");
+};
+
+const apiLogout = () => {
+    return axios.post("api/auth/logout");
+};
+
 export {
     apiLogin,
     apiRegister,
     apiVerifyOtp,
-    apiResendOtp
+    apiResendOtp,
+    apiGetAccount,
+    apiLogout
 };
