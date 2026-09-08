@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             Song.belongsTo(models.Album, { foreignKey: 'albumId' });
             Song.belongsTo(models.Artist, { foreignKey: 'artistId' });
-            Song.belongsTo(models.Genre, { foreignKey: 'genreId' });
+
         }
     }
     Song.init({
@@ -34,13 +34,7 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id',
             }
         },
-        genreId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: 'genres',
-                key: 'id',
-            }
-        },
+
         duration: {
             type: DataTypes.INTEGER,
             allowNull: false,

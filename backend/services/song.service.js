@@ -1,6 +1,5 @@
 const SongRepository = require("../repositories/song.repository");
 const ArtistRepository = require("../repositories/artist.repository");
-const GenreRepository = require("../repositories/genre.repository");
 const FileService = require("./file.service");
 const db = require("../models");
 

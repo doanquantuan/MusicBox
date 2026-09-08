@@ -2,26 +2,30 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-    class Genre extends Model {
+    class Topic extends Model {
         static associate(models) {
-            Genre.hasMany(models.Song, { foreignKey: 'genreId' })
+            Topic.hasMany(models.Song, { foreignKey: 'topicId' })
         }
     }
-    Genre.init({
+    Topic.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
         },
-        genreName: {
+        topicName: {
             type: DataTypes.STRING(100),
             allowNull: false,
             unique: true,
         },
+        imageUrl: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+        },
     }, {
-        modelName: 'Genre',
+        modelName: 'Topic',
         sequelize,
         timestamps: true
     })
-    return Genre;
+    return Topic;
 }

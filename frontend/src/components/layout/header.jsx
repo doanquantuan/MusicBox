@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, User, Music, Shield, Sparkles } from 'lucide-react';
+import { Search, LogOut, User, Music, Shield, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiLogout } from '../../util/api';
 import { notification } from 'antd';
@@ -50,17 +50,23 @@ const Header = ({ user, setUser }) => {
     };
 
     return (
-        <header className="w-full bg-black/40 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                    <Music size={20} />
+        <header className="w-full bg-slate-950/50 backdrop-blur-2xl border-b border-white/10 px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
+            {/* Search Bar (Left) */}
+            <div className="flex-1 max-w-md relative left-5">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Search size={18} className="text-gray-400" />
                 </div>
-                <div>
-                    <h1 className="text-xl font-bold text-white tracking-wide">MusicBox</h1>
-                    <p className="text-xs text-gray-400">Stream & Discover</p>
-                </div>
+                <input
+                    type="text"
+
+                    className="w-full bg-white/10 border border-white/10 rounded-full py-2.5 pl-11 pr-4 text-sm text-white placeholder-gray-400 
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 
+                       transition-all hover:bg-white/10"
+                />
             </div>
 
+
+            {/* User Profile & Actions (Right) */}
             {user && (
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
@@ -71,12 +77,11 @@ const Header = ({ user, setUser }) => {
                             <div className="text-sm font-medium text-white leading-tight">{user.name}</div>
                             <div className="text-xs text-gray-400 leading-tight">{user.email}</div>
                         </div>
-                        {getRoleBadge(user.role)}
                     </div>
 
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-full px-4 py-2 text-sm font-medium transition-all hover:scale-105 active:scale-95"
+                        className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-full px-4 py-2 text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer"
                     >
                         <LogOut size={16} />
                         <span className="hidden sm:inline">Đăng xuất</span>

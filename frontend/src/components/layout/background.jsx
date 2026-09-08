@@ -1,6 +1,6 @@
 const Background = () => {
     return (
-        <div className="fixed inset-0 -z-10 bg-black">
+        <div className="fixed inset-0 -z-10 bg-black pointer-events-none">
 
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#1e1b4b_0%,_#0f0c29_40%,_#000000_100%)]" />
 
