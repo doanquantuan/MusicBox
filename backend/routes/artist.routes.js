@@ -8,7 +8,7 @@ const {
     validateArtist
 } = require("../validators/artist.validator");
 
-router.post("/register", authenticate, authorize("USER", "ADMIN"), imageUpload.single("image"), validateArtist, artistController.createArtist)
+router.post("/create", authenticate, authorize("ADMIN"), imageUpload.single("image"), validateArtist, artistController.createArtist)
 router.put("/update/:artistId", authenticate, authorize("ARTIST", "ADMIN"), imageUpload.single("image"), validateArtist, artistController.updateArtist)
 
 module.exports = router

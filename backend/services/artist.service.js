@@ -2,12 +2,7 @@ const ArtistRepository = require("../repositories/artist.repository");
 const FileService = require("./file.service");
 const db = require("../models");
 
-const createArtist = async (userId, artistData, imageFile) => {
-    if (userId) {
-        const existingArtistByUserId = await ArtistRepository.getArtistByUserId(userId);
-        if (existingArtistByUserId)
-            throw new Error("Tài khoản đã có nghệ sĩ")
-    }
+const createArtist = async (artistData, imageFile) => {
 
     const existingArtist = await ArtistRepository.searchArtistByName(artistData.artistName);
     if (existingArtist)
@@ -18,9 +13,16 @@ const createArtist = async (userId, artistData, imageFile) => {
     if (imageFile) {
         imageUrl = await FileService.uploadImage(imageFile);
     }
-
-    const artist = await ArtistRepository.createArtist(userId, { ...artistData, imageUrl });
-    return artist;
+    try {
+        const artist = await ArtistRepository.createArtist({ ...artistData, imageUrl });
+        return artist;
+    }
+    catch (err) {
+        if (imageFile) {
+            await FileService.deleteImage(imageUrl);
+        }
+        throw new Error(`Thêm nghệ sĩ thất bại: ${err.message}`);
+    }
 }
 
 const updateArtist = async (artistId, artistData, imageFile) => {

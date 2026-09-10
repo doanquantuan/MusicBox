@@ -1,8 +1,8 @@
-const topicService = require("../services/topic.service");
+const playlistService = require("../services/playlist.service");
 
-const createTopic = async (req, res) => {
+const createPlaylist = async (req, res) => {
     try {
-        const result = await topicService.createTopic(req.body, req.file);
+        const result = await playlistService.createPlaylist(req.user.id, req.body, req.file);
         res.status(201).json({
             success: true,
             data: result
@@ -15,9 +15,9 @@ const createTopic = async (req, res) => {
     }
 }
 
-const updateTopic = async (req, res) => {
+const updatePlaylist = async (req, res) => {
     try {
-        const result = await topicService.updateTopic(req.params.topicId, req.body, req.file);
+        const result = await playlistService.updatePlaylist(req.user.id, req.body, req.file, req.params.playlistId);
         res.status(200).json({
             success: true,
             data: result
@@ -30,9 +30,9 @@ const updateTopic = async (req, res) => {
     }
 }
 
-const getAllTopics = async (req, res) => {
+const getAllPlaylists = async (req, res) => {
     try {
-        const result = await topicService.getAllTopics();
+        const result = await playlistService.getAllPlaylists();
         res.status(200).json({
             success: true,
             data: result
@@ -45,9 +45,9 @@ const getAllTopics = async (req, res) => {
     }
 }
 
-const deleteTopic = async (req, res) => {
+const deletePlaylist = async (req, res) => {
     try {
-        const result = await topicService.deleteTopic(req.params.topicId);
+        const result = await playlistService.deletePlaylist(req.params.playlistId);
         res.status(200).json({
             success: true,
             data: result
@@ -59,10 +59,12 @@ const deleteTopic = async (req, res) => {
         });
     }
 }
+
+
 
 module.exports = {
-    createTopic,
-    updateTopic,
-    getAllTopics,
-    deleteTopic
+    createPlaylist,
+    updatePlaylist,
+    getAllPlaylists,
+    deletePlaylist
 }

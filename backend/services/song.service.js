@@ -1,38 +1,64 @@
 const SongRepository = require("../repositories/song.repository");
 const ArtistRepository = require("../repositories/artist.repository");
 const FileService = require("./file.service");
-const db = require("../models");
 
-const createSong = async (userId, songData, audioFile) => {
-    if (userId) {
-        const existingArtistByUserId = await ArtistRepository.getArtistByUserId(userId);
-        if (!existingArtistByUserId) {
-            throw new Error("Tài khoản chưa có nghệ sĩ")
-        }
-    }
 
-    // const existingGenre = await GenreRepository.getGenreById(songData.genreId);
-    // if (!existingGenre) {
-    //     throw new Error("Thể loại không tồn tại")
-    // }
+const createSong = async (songData, coverImage, audioFile) => {
+    const t = await db.sequelize.transaction();
 
-    //  let imageUrl = null;
+    let imageUrl = null;
     let audioUrl = null;
 
-    console.log(songData);
+    try {
 
+        if (coverImage) {
+            imageUrl = await FileService.uploadImage(coverImage);
+        }
 
-    // if (coverImage) {
-    //     imageUrl = await FileService.uploadImage(coverImage);
-    // }
-    if (audioFile) {
-        audioUrl = await FileService.uploadAudio(audioFile);
+        let duration = 0;
+
+        if (audioFile) {
+            duration = await FileService.getAudioDuration(audioFile.buffer);
+            audioUrl = await FileService.uploadAudio(audioFile);
+        }
+
+        const song = await SongRepository.createSong(
+            {
+                ...songData,
+                duration,
+                audioUrl,
+                imageUrl
+            },
+            { transaction: t }
+        );
+
+        await t.commit();
+
+        return song;
+
+    } catch (error) {
+        await t.rollback();
+
+        if (imageUrl) {
+            try {
+                await FileService.deleteImage(imageUrl);
+            } catch (err) {
+                console.error("Rollback ảnh thất bại:", err.message);
+            }
+        }
+
+        if (audioUrl) {
+            try {
+                await FileService.deleteAudio(audioUrl);
+            } catch (err) {
+                console.error("Rollback audio thất bại:", err.message);
+            }
+        }
+
+        throw error;
     }
+};
 
-    const song = await SongRepository.createSong({ ...songData, audioUrl });
-    return song;
-
-}
 
 module.exports = {
     createSong

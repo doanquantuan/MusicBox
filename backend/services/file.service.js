@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs/promises");
 const path = require("path");
 const os = require("os");
@@ -175,8 +176,36 @@ const uploadAudio = async (file) => {
     }
 };
 
+const getAudioDuration = (buffer) => {
+    return new Promise((resolve, reject) => {
+        const tempPath = path.join(
+            os.tmpdir(),
+            `audio-${Date.now()}.mp3`
+        );
+
+        fs.writeFileSync(tempPath, buffer);
+
+        ffmpeg.ffprobe(tempPath, (err, metadata) => {
+            fs.unlinkSync(tempPath);
+
+            if (err) {
+                return reject(err);
+            }
+
+            const duration = metadata.format.duration;
+
+            if (!duration) {
+                return reject(new Error("Không thể xác định thời lượng bài hát"));
+            }
+
+            resolve(Math.round(duration));
+        });
+    });
+};
+
 module.exports = {
     uploadImage,
     deleteImage,
-    uploadAudio
+    uploadAudio,
+    getAudioDuration
 };

@@ -29,10 +29,16 @@ const updateTopic = async (topicId, topicData, options = {}) => {
     return topic;
 }
 
+const deleteTopic = async (topic) => {
+    await topic.destroy();
+    return topic;
+}
+
 module.exports = {
     getTopicById,
     getTopicByName,
     getAllTopics,
     createTopic,
-    updateTopic
+    updateTopic,
+    deleteTopic
 }

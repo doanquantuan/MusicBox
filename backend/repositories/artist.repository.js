@@ -2,11 +2,8 @@ const db = require("../models")
 const Artist = db.Artist;
 const { Op } = require("sequelize");
 
-const createArtist = async (userId, artistData) => {
-    return await Artist.create({
-        ...artistData,
-        userId: userId
-    });
+const createArtist = async (artistData) => {
+    return await Artist.create(artistData);
 }
 
 const updateArtist = async (artistId, artistData, options = {}) => {

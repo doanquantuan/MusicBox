@@ -3,8 +3,29 @@ const Playlist = db.Playlist;
 
 const getPlaylistById = async (id) => await Playlist.findByPk(id);
 const getPlaylistsByUser = async (userId) => await Playlist.findAll({ where: { userId } });
-const createPlaylist = async (data) => await Playlist.create(data);
-const updatePlaylist = async (id, data) => await Playlist.update(data, { where: { id } });
-const deletePlaylist = async (id) => await Playlist.destroy({ where: { id } });
+const createPlaylist = async (playlistData) => {
+    const playlist = await Playlist.create(playlistData);
+    return playlist;
+}
+const updatePlaylist = async (playlistId, playlistData, options = {}) => {
+    const playlist = await Playlist.update(playlistData, { where: { id: playlistId }, ...options });
+    return playlist;
+}
+const deletePlaylist = async (playlistId, options = {}) => await Playlist.destroy({ where: { id: playlistId }, ...options });
 
-module.exports = { getPlaylistById, getPlaylistsByUser, createPlaylist, updatePlaylist, deletePlaylist };
+const upadateStatus = async (playlistId, status) => await Playlist.update({ status }, { where: { id: playlistId } });
+const updatePlayCount = async (playlistId) => await Playlist.update({ playCount: Sequelize.literal('playCount + 1') }, { where: { id: playlistId } });
+const likePlaylist = async (playlistId) => await Playlist.update({ likeCount: Sequelize.literal('likeCount + 1') }, { where: { id: playlistId } });
+const unlikePlaylist = async (playlistId) => await Playlist.update({ likeCount: Sequelize.literal('likeCount - 1') }, { where: { id: playlistId } });
+
+module.exports = {
+    getPlaylistById,
+    getPlaylistsByUser,
+    createPlaylist,
+    updatePlaylist,
+    deletePlaylist,
+    upadateStatus,
+    updatePlayCount,
+    likePlaylist,
+    unlikePlaylist
+};

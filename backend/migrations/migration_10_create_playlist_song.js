@@ -39,6 +39,16 @@ module.exports = {
                 defaultValue: Sequelize.NOW,
             }
         });
+        // Add unique constraint for playlistId and songId
+        await queryInterface.addIndex('playlist_songs', ['playlistId', 'songId'], {
+            unique: true,
+            name: 'playlist_songs_playlistId_songId_unique'
+        });
+        // Add unique constraint for position and playlistId
+        await queryInterface.addIndex('playlist_songs', ['position', 'playlistId'], {
+            unique: true,
+            name: 'playlist_songs_position_playlistId_unique'
+        });
     },
     down: async (queryInterface, Sequelize) => {
         await queryInterface.dropTable('playlist_songs');

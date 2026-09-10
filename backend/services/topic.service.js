@@ -1,5 +1,4 @@
 const TopicRepository = require("../repositories/topic.repository");
-const Topic = require("../models").Topic;
 const FileService = require("./file.service");
 
 const createTopic = async (topicData, imageFile) => {
@@ -59,9 +58,6 @@ const updateTopic = async (topicId, topicData, imageFile) => {
         return await TopicRepository.getTopicById(topicId);
     } catch (error) {
         await t.rollback();
-
-        // Nếu update db thất bại và trước đó đã upload thành công ảnh mới lên S3,
-        // thực hiện xóa ảnh mới để tránh rác S3
         if (imageFile && uploadSuccess && imageUrl && imageUrl !== existingTopic.imageUrl) {
             try {
                 await FileService.deleteImage(imageUrl);
@@ -78,9 +74,27 @@ const getAllTopics = async () => {
     return TopicRepository.getAllTopics();
 }
 
+const deleteTopic = async (topicId) => {
+    const topic = await TopicRepository.getTopicById(topicId);
+    if (!topic) {
+        throw new Error("Không tìm thấy chủ đề");
+    }
 
+    await TopicRepository.deleteTopic(topic);
+
+    if (topic.imageUrl) {
+        try {
+            await FileService.deleteImage(topic.imageUrl);
+        } catch (err) {
+            console.error("Xóa ảnh cũ thất bại:", err.message);
+        }
+    }
+
+    return topic;
+}
 
 module.exports = {
     createTopic,
-    getAllTopics
+    getAllTopics,
+    updateTopic,
 }

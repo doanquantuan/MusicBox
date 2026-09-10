@@ -35,9 +35,7 @@ const getSongById = async (req, res) => {
 
 const createSong = async (req, res) => {
     try {
-        console.log("req.body: ", req.body);
-        const userId = req.user.id;
-        const song = await songService.createSong(userId, req.body, req.file);
+        const song = await songService.createSong(req.body, req.file);
 
         return res.status(201).json({
             success: true,
@@ -51,6 +49,8 @@ const createSong = async (req, res) => {
         });
     }
 }
+
+
 
 module.exports = {
     getSongs,

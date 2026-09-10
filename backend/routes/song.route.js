@@ -8,7 +8,7 @@ const { imageUpload, audioUpload } = require("../middlewares/upload.middleware")
 //     validateSong
 // } = require("../validators/artist.validator");
 
-router.post("/create", authenticate, authorize('ARTIST', 'ADMIN'), audioUpload.single("audio"), songController.createSong)
+router.post("/create", authenticate, authorize('ADMIN'), imageUpload.single("image"), audioUpload.single("audio"), songController.createSong)
 //router.put("/update/:artistId", authenticate, imageUpload.single("image"), validateArtist, artistController.updateArtist)
 
 module.exports = router

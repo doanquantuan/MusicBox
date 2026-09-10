@@ -35,9 +35,17 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id',
             }
         },
+        topicId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'topics',
+                key: 'id',
+            }
+        },
         status: {
             type: DataTypes.ENUM('public', 'private'),
-            defaultValue: 'public',
+            defaultValue: 'private',
         },
         playCount: {
             type: DataTypes.INTEGER,

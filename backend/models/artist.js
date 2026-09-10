@@ -4,7 +4,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Artist extends Model {
         static associate(models) {
-            Artist.belongsTo(models.User, { foreignKey: 'userId' });
             Artist.hasMany(models.Album, { foreignKey: 'artistId' });
             Artist.belongsToMany(models.Song, { foreignKey: 'artistId', otherKey: 'songId', through: 'song_artists', as: 'songs' });
         }
@@ -28,14 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         imageUrl: {
             type: DataTypes.STRING,
             allowNull: true,
-        },
-        userId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'users',
-                key: 'id',
-            }
         },
         createdAt: {
             type: DataTypes.DATE,

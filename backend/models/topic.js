@@ -19,8 +19,8 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
         },
         imageUrl: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
+            type: DataTypes.STRING(500),
+            allowNull: true,
         },
     }, {
         modelName: 'Topic',
