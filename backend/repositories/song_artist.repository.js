@@ -5,9 +5,10 @@ const Artist = db.Artist;
 
 const getArtistsBySong = async (songId) => await SongArtist.findAll({ where: { songId } });
 
-const addSongArtist = async (data, { transaction }) => await SongArtist.create(data, { transaction });
-const removeSongArtist = async (songId, artistId) => await SongArtist.destroy({ where: { songId, artistId } });
-const bulkCreate = async (data, { transaction }) => await SongArtist.bulkCreate(data, { transaction });
+const addSongArtist = async (data, options = {}) => await SongArtist.create(data, options);
+const removeSongArtist = async (songId, artistId, options = {}) => await SongArtist.destroy({ where: { songId, artistId }, ...options });
+const removeBySongId = async (songId, options = {}) => await SongArtist.destroy({ where: { songId }, ...options });
+const bulkCreate = async (data, options = {}) => await SongArtist.bulkCreate(data, options);
 const getSongsByArtistId = async (artistId) => {
     return await Song.findAll({
         include: [
@@ -36,5 +37,6 @@ module.exports = {
     getSongsByArtistId,
     addSongArtist,
     removeSongArtist,
+    removeBySongId,
     bulkCreate
 };

@@ -1,4 +1,4 @@
-const { PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } = require("@aws-sdk/client-s3");
 const s3Client = require("../config/s3");
 
 const uploadFile = async (fileBuffer, fileName, mimeType) => {
@@ -50,7 +50,42 @@ const deleteFile = async (fileName) => {
     }
 };
 
+const deleteFolder = async (folderPrefix) => {
+    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    if (!bucketName) {
+        throw new Error("AWS_S3_BUCKET_NAME không được cấu hình");
+    }
+
+    try {
+        const listCommand = new ListObjectsV2Command({
+            Bucket: bucketName,
+            Prefix: folderPrefix
+        });
+        const listedObjects = await s3Client.send(listCommand);
+
+        if (!listedObjects.Contents || listedObjects.Contents.length === 0) {
+            return true;
+        }
+
+        const deleteParams = {
+            Bucket: bucketName,
+            Delete: { Objects: listedObjects.Contents.map(({ Key }) => ({ Key })) }
+        };
+
+        const deleteCommand = new DeleteObjectsCommand(deleteParams);
+        await s3Client.send(deleteCommand);
+
+        if (listedObjects.IsTruncated) {
+            await deleteFolder(folderPrefix);
+        }
+        return true;
+    } catch (error) {
+        throw new Error(`S3 xóa folder thất bại: ${error.message}`);
+    }
+};
+
 module.exports = {
     uploadFile,
-    deleteFile
+    deleteFile,
+    deleteFolder
 };

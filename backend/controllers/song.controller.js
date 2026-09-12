@@ -71,9 +71,49 @@ const createSong = async (req, res) => {
 
 
 
+const updateSong = async (req, res) => {
+    try {
+        const songId = req.params.songId;
+        const image = req.files?.image?.[0];
+        const audio = req.files?.audio?.[0];
+        const song = await songService.updateSong(songId, req.body, image, audio);
+
+        return res.status(200).json({
+            success: true,
+            message: "Cập nhật bài hát thành công",
+            data: song
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const deleteSong = async (req, res) => {
+    try {
+        const songId = req.params.songId;
+        const song = await songService.deleteSong(songId);
+        return res.status(200).json({
+            success: true,
+            message: "Xóa bài hát thành công",
+            data: song
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+
 module.exports = {
     getSongs,
     getSongById,
     getSongsByArtistId,
-    createSong
+    createSong,
+    updateSong,
+    deleteSong
 }

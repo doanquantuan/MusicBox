@@ -2,8 +2,20 @@ const db = require('../models');
 const Song = db.Song;
 const Artist = db.Artist;
 
-const getSongById = async (songId) => {
-    return await Song.findByPk(songId);
+const getSongById = async (songId, options = {}) => {
+    return await Song.findByPk(songId, {
+        ...options,
+        include: [
+            {
+                model: Artist,
+                as: "artists",
+                attributes: ["id", "artistName"],
+                through: {
+                    attributes: []
+                }
+            }
+        ]
+    });
 };
 
 const getSongs = async () => {
@@ -38,16 +50,16 @@ const searchSongsByTitle = async (title) => {
     });
 };
 
-const createSong = async (song) => {
-    return await Song.create(song);
+const createSong = async (song, options = {}) => {
+    return await Song.create(song, options);
 };
 
-const updateSong = async (songId, song) => {
-    return await Song.update(song, { where: { id: songId } });
+const updateSong = async (songId, song, options = {}) => {
+    return await Song.update(song, { where: { id: songId }, ...options });
 };
 
-const deleteSong = async (songId) => {
-    return await Song.destroy({ where: { id: songId } });
+const deleteSong = async (songId, options = {}) => {
+    return await Song.destroy({ where: { id: songId }, ...options });
 };
 
 module.exports = {

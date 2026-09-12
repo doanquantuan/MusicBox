@@ -210,9 +210,28 @@ const getAudioDuration = async (buffer) => {
     }
 };
 
+const deleteAudio = async (audioUrl) => {
+    if (!audioUrl) return false;
+
+    const match = audioUrl.match(/\.amazonaws\.com\/(audios\/[^/]+\/)/);
+    if (match) {
+        const folderPrefix = match[1];
+        return await s3Repository.deleteFolder(folderPrefix);
+    }
+
+    const singleMatch = audioUrl.match(/\.amazonaws\.com\/(.+)$/);
+    if (singleMatch) {
+        return await s3Repository.deleteFile(singleMatch[1]);
+    }
+
+    console.warn(`URL audio không đúng định dạng S3: ${audioUrl}`);
+    return false;
+};
+
 module.exports = {
     uploadImage,
     deleteImage,
     uploadAudio,
+    deleteAudio,
     getAudioDuration
 };

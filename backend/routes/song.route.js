@@ -17,6 +17,10 @@ router.post("/create", authenticate, authorize('ADMIN'), songUpload.fields([
     { name: "image", maxCount: 1 },
     { name: "audio", maxCount: 1 }
 ]), validateSong, songController.createSong)
-//router.put("/update/:artistId", authenticate, imageUpload.single("image"), validateArtist, artistController.updateArtist)
+router.put("/update/:songId", authenticate, authorize('ADMIN'), songUpload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "audio", maxCount: 1 }
+]), songController.updateSong)
+router.delete("/delete/:songId", authenticate, authorize('ADMIN'), songController.deleteSong)
 
 module.exports = router
