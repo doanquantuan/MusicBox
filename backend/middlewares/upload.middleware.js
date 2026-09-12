@@ -36,7 +36,13 @@ const audioUpload = multer({
         fileSize: 1024 * 1024 * 50 //50MB
     }
 });
+
+const songUpload = multer({
+    storage: multer.memoryStorage()
+});
+
 module.exports = {
     imageUpload,
-    audioUpload
+    audioUpload,
+    songUpload
 };

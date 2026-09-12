@@ -37,6 +37,12 @@ module.exports = (sequelize, DataTypes) => {
         modelName: 'SongArtist',
         tableName: 'song_artists',
         timestamps: true,
+        indexes: [
+            {
+                unique: true,
+                fields: ["songId", "artistId"]
+            }
+        ]
     })
     return SongArtist;
 }

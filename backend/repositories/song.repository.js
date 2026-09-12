@@ -1,5 +1,6 @@
 const db = require('../models');
 const Song = db.Song;
+const Artist = db.Artist;
 
 const getSongById = async (songId) => {
     return await Song.findByPk(songId);
@@ -9,9 +10,7 @@ const getSongs = async () => {
     return await Song.findAll();
 };
 
-// const getSongsByArtistId = async (artistId) => {
-//     return await Song.findAll({ where: { artistId } });
-// };
+
 
 // const getSongsByAlbumId = async (albumId) => {
 //     return await Song.findAll({ where: { albumId } });
@@ -54,6 +53,7 @@ const deleteSong = async (songId) => {
 module.exports = {
     getSongById,
     getSongs,
+
     // searchSongsByArtistId,
     // searchSongsByAlbumId,
     // searchSongsByPlaylistId,

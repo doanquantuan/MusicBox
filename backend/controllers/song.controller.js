@@ -33,9 +33,28 @@ const getSongById = async (req, res) => {
     }
 }
 
+const getSongsByArtistId = async (req, res) => {
+    try {
+        const artistId = req.params.artistId;
+        const songs = await songService.getSongsByArtistId(artistId);
+        return res.status(200).json({
+            success: true,
+            message: "Lấy danh sách bài hát thành công",
+            data: songs
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 const createSong = async (req, res) => {
     try {
-        const song = await songService.createSong(req.body, req.file);
+        const image = req.files?.image?.[0];
+        const audio = req.files?.audio?.[0];
+        const song = await songService.createSong(req.body, image, audio);
 
         return res.status(201).json({
             success: true,
@@ -55,5 +74,6 @@ const createSong = async (req, res) => {
 module.exports = {
     getSongs,
     getSongById,
+    getSongsByArtistId,
     createSong
 }

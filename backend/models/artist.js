@@ -5,7 +5,8 @@ module.exports = (sequelize, DataTypes) => {
     class Artist extends Model {
         static associate(models) {
             Artist.hasMany(models.Album, { foreignKey: 'artistId' });
-            Artist.belongsToMany(models.Song, { foreignKey: 'artistId', otherKey: 'songId', through: 'song_artists', as: 'songs' });
+            Artist.belongsToMany(models.Song, { foreignKey: 'artistId', otherKey: 'songId', through: models.SongArtist, as: 'songs' });
+            Artist.hasMany(models.SongArtist, { foreignKey: 'artistId', as: 'songArtists' });
         }
     }
 

@@ -14,6 +14,10 @@ const getArtistById = async (artistId) => {
     return await Artist.findByPk(artistId);
 }
 
+const getArtistsByIds = async (artistIds, options = {}) => {
+    return await Artist.findAll({ where: { id: { [Op.in]: artistIds } }, ...options });
+}
+
 const getArtistByUserId = async (userId) => {
     return await Artist.findOne({ where: { userId } });
 }
@@ -39,6 +43,7 @@ module.exports = {
     createArtist,
     updateArtist,
     getArtistById,
+    getArtistsByIds,
     getArtistByUserId,
     searchArtistByName,
     searchArtistByKeyword

@@ -5,8 +5,13 @@ module.exports = (sequelize, DataTypes) => {
     class Song extends Model {
         static associate(models) {
             Song.belongsTo(models.Album, { foreignKey: 'albumId' });
-            Song.belongsTo(models.Artist, { foreignKey: 'artistId' });
-
+            Song.belongsToMany(models.Artist, {
+                foreignKey: "songId",
+                otherKey: "artistId",
+                through: models.SongArtist,
+                as: "artists"
+            });
+            Song.hasMany(models.SongArtist, { foreignKey: 'songId', as: 'songArtists' });
         }
     }
     Song.init({
@@ -24,13 +29,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             references: {
                 model: 'albums',
-                key: 'id',
-            }
-        },
-        artistId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: 'artists',
                 key: 'id',
             }
         },
