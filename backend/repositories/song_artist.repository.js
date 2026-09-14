@@ -32,8 +32,32 @@ const getSongsByArtistId = async (artistId) => {
         ]
     });
 };
+const getArtistBySongId = async (songId) => {
+    return await Artist.findAll({
+        include: [
+            {
+                model: Song,
+                as: "songs",
+                attributes: ["id", "title"],
+                through: {
+                    attributes: []
+                }
+            },
+            {
+                model: SongArtist,
+                as: "songArtists",
+                where: {
+                    songId
+                },
+                attributes: [],
+                required: true
+            }
+        ]
+    });
+};
 module.exports = {
     getArtistsBySong,
+    getArtistBySongId,
     getSongsByArtistId,
     addSongArtist,
     removeSongArtist,

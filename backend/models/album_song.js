@@ -2,39 +2,38 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Album extends Model {
+    class AlbumSong extends Model {
         static associate(models) {
-            Album.belongsTo(models.Artist, { foreignKey: 'artistId' });
-            Album.belongsToMany(models.Song, { foreignKey: 'albumId', otherKey: 'songId', through: models.AlbumSong });
-            Album.hasMany(models.AlbumSong, { foreignKey: 'albumId' });
+            AlbumSong.belongsTo(models.Album, { foreignKey: 'albumId' })
+            AlbumSong.belongsTo(models.Song, { foreignKey: 'songId' })
         }
     }
 
-    Album.init({
+    AlbumSong.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
         },
-        albumName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        description: {
-            type: DataTypes.STRING(500),
-            allowNull: true,
-        },
-        coverImgUrl: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        artistId: {
+        songId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'artists',
+                model: 'songs',
                 key: 'id',
             }
+        },
+        albumId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'albums',
+                key: 'id',
+            }
+        },
+        trackNumber: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
         },
         createdAt: {
             type: DataTypes.DATE,
@@ -48,9 +47,9 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {
         sequelize,
-        modelName: 'Album',
-        tableName: 'albums',
+        modelName: 'AlbumSong',
+        tableName: 'album_songs',
         timestamps: true,
     })
-    return Album;
+    return AlbumSong;
 }

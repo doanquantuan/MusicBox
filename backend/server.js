@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.routes.js";
 import artistRoutes from "./routes/artist.routes.js";
 import topicRoutes from "./routes/topic.route.js";
 import songRoutes from "./routes/song.route.js";
+import albumRoutes from "./routes/album.route.js";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
@@ -38,6 +39,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/artist", artistRoutes);
 app.use("/api/topic", topicRoutes);
 app.use("/api/song", songRoutes);
+app.use("/api/album", albumRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

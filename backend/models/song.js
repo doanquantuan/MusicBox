@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
                 as: "artists"
             });
             Song.hasMany(models.SongArtist, { foreignKey: 'songId', as: 'songArtists' });
+            Song.hasMany(models.AlbumSong, { foreignKey: 'songId' });
         }
     }
     Song.init({

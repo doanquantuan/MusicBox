@@ -1,4 +1,5 @@
 const db = require('../models');
+const { Op } = require('sequelize');
 const Song = db.Song;
 const Artist = db.Artist;
 
@@ -62,6 +63,10 @@ const deleteSong = async (songId, options = {}) => {
     return await Song.destroy({ where: { id: songId }, ...options });
 };
 
+const getSongsByIds = async (songIds, options = {}) => {
+    return await Song.findAll({ where: { id: { [Op.in]: songIds } }, ...options });
+};
+
 module.exports = {
     getSongById,
     getSongs,
@@ -74,5 +79,6 @@ module.exports = {
     searchSongsByTitle,
     createSong,
     updateSong,
-    deleteSong
+    deleteSong,
+    getSongsByIds
 };
