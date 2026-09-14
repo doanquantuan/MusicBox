@@ -10,6 +10,7 @@ import artistRoutes from "./routes/artist.routes.js";
 import topicRoutes from "./routes/topic.route.js";
 import songRoutes from "./routes/song.route.js";
 import albumRoutes from "./routes/album.route.js";
+import playlistRoutes from "./routes/playlist.route.js";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
@@ -34,12 +35,13 @@ if (process.env.NODE_ENV !== 'test') {
     connectDB();
 }
 
-// API Routes
+// RESTful API Routes (Plural Nouns)
 app.use("/api/auth", authRoutes);
-app.use("/api/artist", artistRoutes);
-app.use("/api/topic", topicRoutes);
-app.use("/api/song", songRoutes);
-app.use("/api/album", albumRoutes);
+app.use("/api/artists", artistRoutes);
+app.use("/api/topics", topicRoutes);
+app.use("/api/songs", songRoutes);
+app.use("/api/albums", albumRoutes);
+app.use("/api/playlists", playlistRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -1,5 +1,5 @@
 const PlaylistRepository = require("../repositories/playlist.repository");
-const PlaylistSongRepository = require("../repositories/playlist-song.repository");
+const PlaylistSongRepository = require("../repositories/playlist_song.repository");
 const FileService = require("./file.service");
 
 const getSongsByPlaylist = async (playlistId) => {

@@ -6,10 +6,10 @@ const router = express.Router();
 const { validateTopic } = require('../validators/topic.validator');
 const { imageUpload } = require('../middlewares/upload.middleware');
 
-router.post('/create', authenticate, authorize('ADMIN'), imageUpload.single("image"), validateTopic, topicController.createTopic);
-router.put('/update/:topicId', authenticate, authorize('ADMIN'), imageUpload.single("image"), validateTopic, topicController.updateTopic);
+// Standard RESTful endpoints for /api/topics
 router.get('/', authenticate, topicController.getAllTopics);
-router.delete('/delete/:topicId', authenticate, authorize('ADMIN'), topicController.deleteTopic);
-
+router.post('/', authenticate, authorize('ADMIN'), imageUpload.single("image"), validateTopic, topicController.createTopic);
+router.put('/:topicId', authenticate, authorize('ADMIN'), imageUpload.single("image"), validateTopic, topicController.updateTopic);
+router.delete('/:topicId', authenticate, authorize('ADMIN'), topicController.deleteTopic);
 
 module.exports = router;
