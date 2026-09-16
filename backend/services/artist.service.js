@@ -5,25 +5,24 @@ const db = require("../models");
 const createArtist = async (artistData, imageFile) => {
 
     const existingArtist = await ArtistRepository.searchArtistByName(artistData.artistName);
-    if (existingArtist)
-        throw new Error("Tên nghệ sĩ đã tồn tại")
+    if (existingArtist) {
+        throw new Error("Tên nghệ sĩ đã tồn tại");
+    }
 
     let imageUrl = null;
 
     if (imageFile) {
         imageUrl = await FileService.uploadImage(imageFile);
     }
+
     try {
         const artist = await ArtistRepository.createArtist({ ...artistData, imageUrl });
         return artist;
-    }
-    catch (err) {
-        if (imageFile) {
-            await FileService.deleteImage(imageUrl);
-        }
+    } catch (err) {
         throw new Error(`Thêm nghệ sĩ thất bại: ${err.message}`);
     }
 }
+
 
 const updateArtist = async (artistId, artistData, imageFile) => {
     const existingArtist = await ArtistRepository.getArtistById(artistId);

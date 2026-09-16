@@ -7,33 +7,100 @@ const { execFile } = require("child_process");
 const { promisify } = require("util");
 const execFileAsync = promisify(execFile);
 const s3Repository = require("../repositories/s3.repository");
+const imageQueue = require("../queues/image.queue");
+
 
 const uploadImage = async (file) => {
+    // ==========================================
+    // PHIÊN BẢN CỦ: Upload trực tiếp (Synchronous)
+    // ==========================================
+    // if (!file) {
+    //     throw new Error("Không có file nào được tải lên");
+    // }
+
+    // const fileName = `images/${crypto.randomUUID()}.jpg`;
+    // console.log("File name: " + fileName);
+
+    // const buffer = file.buffer || (file.path ? await fs.readFile(file.path) : null);
+    // const imageUrl = await s3Repository.uploadFile(buffer, fileName, file.mimetype);
+    // console.log("Image url: " + imageUrl);
+
+    // if (file.path) {
+    //     await fs.unlink(file.path).catch(() => {});
+    // }
+
+    // return imageUrl;
+
     if (!file) {
         throw new Error("Không có file nào được tải lên");
     }
 
-    const fileName = `images/${crypto.randomUUID()}.jpg`;
-    console.log("File name: " + fileName);
+    const filePath = file.path || null;
+    if (!filePath) {
+        throw new Error("Không tìm thấy đường dẫn file tạm (filePath). Vui lòng sử dụng diskStorage middleware.");
+    }
 
-    const imageUrl = await s3Repository.uploadFile(file.buffer, fileName, file.mimetype);
-    console.log("Image url: " + imageUrl);
+    const s3Key = `images/${crypto.randomUUID()}.jpg`;
 
-    return imageUrl;
+    // Đẩy Job chứa đường dẫn file (filePath) và s3Key vào hàng chờ BullMQ
+    await imageQueue.add(
+        'upload-image',
+        {
+            filePath,
+            s3Key,
+            mimetype: file.mimetype
+        },
+        {
+            attempts: 3,
+            backoff: {
+                type: 'exponential',
+                delay: 2000
+            },
+            removeOnComplete: true,
+            removeOnFail: false
+        }
+    );
+
+    const imageUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${s3Key}`;
+
+    return imageUrl
 };
 
-const deleteImage = async (imageUrl) => {
-    if (!imageUrl) return false;
 
-    // Extract S3 object key from the public URL
-    const match = imageUrl.match(/\.amazonaws\.com\/(.+)$/);
-    if (!match) {
-        console.warn(`URL ảnh không đúng định dạng S3: ${imageUrl}`);
+const deleteImage = async (imageUrl) => {
+    // if (!imageUrl) return false;
+
+    // // Extract S3 object key from the public URL
+    // const match = imageUrl.match(/\.amazonaws\.com\/(.+)$/);
+    // if (!match) {
+    //     console.warn(`URL ảnh không đúng định dạng S3: ${imageUrl}`);
+    //     return false;
+    // }
+
+    // const s3Key = match[1];
+    // return await s3Repository.deleteFile(s3Key);
+
+    if (!imageUrl) {
         return false;
     }
 
-    const s3Key = match[1];
-    return await s3Repository.deleteFile(s3Key);
+    await imageQueue.add(
+        'delete-image',
+        {
+            imageUrl
+        },
+        {
+            attempts: 3,
+            backoff: {
+                type: 'exponential',
+                delay: 2000
+            },
+            removeOnComplete: true,
+            removeOnFail: false
+        }
+    );
+
+    return true;
 };
 
 const uploadAudio = async (file) => {
@@ -69,11 +136,16 @@ const uploadAudio = async (file) => {
             recursive: true
         });
 
-        // 1. Lưu audio buffer tạm thời
-        await fs.writeFile(
-            inputPath,
-            file.buffer
-        );
+        // 1. Lưu audio file tạm thời
+        if (file.path) {
+            await fs.copyFile(file.path, inputPath);
+            await fs.unlink(file.path).catch(() => { });
+        } else {
+            await fs.writeFile(
+                inputPath,
+                file.buffer
+            );
+        }
 
         // 2. Chuyển audio sang HLS
         await execFileAsync("ffmpeg", [
@@ -176,15 +248,25 @@ const uploadAudio = async (file) => {
     }
 };
 
-const getAudioDuration = async (buffer) => {
-    const tempPath = path.join(
-        os.tmpdir(),
-        `audio-${crypto.randomUUID()}.mp3`
-    );
+const getAudioDuration = async (input) => {
+    let tempPath;
+    let isTempFileCreated = false;
+
+    if (typeof input === 'string') {
+        tempPath = input;
+    } else if (input?.path) {
+        tempPath = input.path;
+    } else {
+        const buffer = input?.buffer || input;
+        tempPath = path.join(
+            os.tmpdir(),
+            `audio-${crypto.randomUUID()}.mp3`
+        );
+        await fs.writeFile(tempPath, buffer);
+        isTempFileCreated = true;
+    }
 
     try {
-        await fs.writeFile(tempPath, buffer);
-
         const duration = await new Promise((resolve, reject) => {
             ffmpeg.ffprobe(tempPath, (err, metadata) => {
                 if (err) {
@@ -205,8 +287,9 @@ const getAudioDuration = async (buffer) => {
 
         return duration;
     } finally {
-        // Luôn xóa file tạm, kể cả ffprobe bị lỗi
-        await fs.unlink(tempPath).catch(() => { });
+        if (isTempFileCreated) {
+            await fs.unlink(tempPath).catch(() => { });
+        }
     }
 };
 

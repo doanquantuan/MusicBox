@@ -16,6 +16,7 @@ const createArtist = async (req, res) => {
     }
 }
 
+
 const updateArtist = async (req, res) => {
     try {
         const artistId = req.params.artistId;

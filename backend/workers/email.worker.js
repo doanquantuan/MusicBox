@@ -50,10 +50,6 @@ const emailWorker = new Worker(
             })
         );
 
-        console.log(
-            `Email sent to ${email} in ${result.durationMs} ms`
-        );
-
         return result;
     },
     {

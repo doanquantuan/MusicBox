@@ -237,3 +237,9 @@ Khi người dùng thực hiện **Tạo (Create)** hoặc **Cập nhật (Updat
    ```bash
    npm run dev
    ```
+
+   // Khởi động Redis
+   docker run -d --name musicbox-redis -p 6379:6379 redis:latest
+
+   // Khởi động Email Worker
+   npm run worker
