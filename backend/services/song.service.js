@@ -55,7 +55,7 @@ const createSong = async (songData, coverImage, audioFile) => {
         let duration = 0;
 
         if (audioFile) {
-            duration = await FileService.getAudioDuration(audioFile.buffer);
+            duration = await FileService.getAudioDuration(audioFile);
             audioUrl = await FileService.uploadAudio(audioFile);
         }
 
@@ -189,7 +189,7 @@ const updateSong = async (songId, songData, coverImage, audioFile) => {
         // =========================
         if (audioFile) {
             updateData.duration =
-                await FileService.getAudioDuration(audioFile.buffer);
+                await FileService.getAudioDuration(audioFile);
 
             newAudioUrl = await FileService.uploadAudio(audioFile);
             updateData.audioUrl = newAudioUrl;

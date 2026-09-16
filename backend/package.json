@@ -11,7 +11,8 @@
     "start": "babel-node server.js",
     "dev": "nodemon --exec babel-node server.js",
     "worker:email": "node ./workers/email.worker.js",
-    "worker:image": "node ./workers/image.worker.js"
+    "worker:image": "node ./workers/image.worker.js",
+    "worker:audio": "node ./workers/audio.worker.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1117.0",

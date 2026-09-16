@@ -8,6 +8,7 @@ const { promisify } = require("util");
 const execFileAsync = promisify(execFile);
 const s3Repository = require("../repositories/s3.repository");
 const imageQueue = require("../queues/image.queue");
+const audioQueue = require("../queues/audio.queue");
 
 
 const uploadImage = async (file) => {
@@ -104,6 +105,10 @@ const deleteImage = async (imageUrl) => {
 };
 
 const uploadAudio = async (file) => {
+    // ==========================================
+    // PHIÊN BẢN CỦ: Upload & HLS trực tiếp (Synchronous)
+    // ==========================================
+    /*
     if (!file) {
         throw new Error("Không có file nào được tải lên");
     }
@@ -186,18 +191,6 @@ const uploadAudio = async (file) => {
             )
         ]);
 
-        /*
-        Upload structure:
-
-        audios/{audioId}/
-        ├── playlist.m3u8
-        └── segments/
-            ├── segment_000.ts
-            ├── segment_001.ts
-            └── ...
-        */
-
-
         // 3. Upload tất cả segments trước
         const segments = await fs.readdir(segmentDir);
 
@@ -246,9 +239,47 @@ const uploadAudio = async (file) => {
             force: true
         });
     }
+    */
+
+    if (!file) {
+        throw new Error("Không có file nào được tải lên");
+    }
+
+    const filePath = file.path || null;
+    if (!filePath) {
+        throw new Error("Không tìm thấy đường dẫn file tạm (filePath). Vui lòng sử dụng diskStorage middleware.");
+    }
+
+    const audioId = crypto.randomUUID();
+
+    // Đẩy Job chuyển đổi HLS và Upload Audio vào hàng chờ BullMQ
+    await audioQueue.add(
+        'upload-audio',
+        {
+            filePath,
+            audioId
+        },
+        {
+            attempts: 3,
+            backoff: {
+                type: 'exponential',
+                delay: 2000
+            },
+            removeOnComplete: true,
+            removeOnFail: false
+        }
+    );
+
+    const playlistUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/audios/${audioId}/playlist.m3u8`;
+
+    return playlistUrl;
 };
 
 const getAudioDuration = async (input) => {
+    if (!input) {
+        throw new Error("Dữ liệu audio không hợp lệ (input bị undefined)");
+    }
+
     let tempPath;
     let isTempFileCreated = false;
 
@@ -258,6 +289,9 @@ const getAudioDuration = async (input) => {
         tempPath = input.path;
     } else {
         const buffer = input?.buffer || input;
+        if (!buffer) {
+            throw new Error("Không tìm thấy đường dẫn đĩa (path) hoặc dữ liệu bộ nhớ (buffer) của audio");
+        }
         tempPath = path.join(
             os.tmpdir(),
             `audio-${crypto.randomUUID()}.mp3`
@@ -294,21 +328,43 @@ const getAudioDuration = async (input) => {
 };
 
 const deleteAudio = async (audioUrl) => {
-    if (!audioUrl) return false;
+    // if (!audioUrl) return false;
 
-    const match = audioUrl.match(/\.amazonaws\.com\/(audios\/[^/]+\/)/);
-    if (match) {
-        const folderPrefix = match[1];
-        return await s3Repository.deleteFolder(folderPrefix);
+    // const match = audioUrl.match(/\.amazonaws\.com\/(audios\/[^/]+\/)/);
+    // if (match) {
+    //     const folderPrefix = match[1];
+    //     return await s3Repository.deleteFolder(folderPrefix);
+    // }
+
+    // const singleMatch = audioUrl.match(/\.amazonaws\.com\/(.+)$/);
+    // if (singleMatch) {
+    //     return await s3Repository.deleteFile(singleMatch[1]);
+    // }
+
+    // console.warn(`URL audio không đúng định dạng S3: ${audioUrl}`);
+    // return false;
+
+    if (!audioUrl) {
+        return false;
     }
 
-    const singleMatch = audioUrl.match(/\.amazonaws\.com\/(.+)$/);
-    if (singleMatch) {
-        return await s3Repository.deleteFile(singleMatch[1]);
-    }
+    await audioQueue.add(
+        'delete-audio',
+        {
+            audioUrl
+        },
+        {
+            attempts: 3,
+            backoff: {
+                type: 'exponential',
+                delay: 2000
+            },
+            removeOnComplete: true,
+            removeOnFail: false
+        }
+    );
 
-    console.warn(`URL audio không đúng định dạng S3: ${audioUrl}`);
-    return false;
+    return true;
 };
 
 module.exports = {
