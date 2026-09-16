@@ -31,15 +31,16 @@ const register = async (name, email, password) => {
     // Tạo OTP
     const userWithOtp = await otpService.generateOtp(normalizedEmail);
 
-    // Gửi email ở background (không await)
-    emailService
-        .sendOtpEmail(normalizedEmail, userWithOtp.otpCode, 'verify-email')
-        .catch((err) => {
-            console.error("Gửi email OTP thất bại:", err);
-            // Có thể log vào hệ thống monitoring
-        });
+    // await emailService
+    //     .sendOtpEmail(normalizedEmail, userWithOtp.otpCode, 'verify-email')
 
-    // Trả về ngay lập tức, không đợi email
+    // Gửi email bằng worker
+    await emailService.sendOtpEmailWithQueue(
+        normalizedEmail,
+        userWithOtp.otpCode,
+        'verify-email'
+    );
+
     return {
         id: user.id,
         name: user.name,
@@ -168,7 +169,7 @@ const forgotPassword = async (email) => {
     const userWithOtp = await otpService.generateOtp(normalizedEmail);
 
     // Send email with the generated OTP code
-    await emailService.sendOtpEmail(normalizedEmail, userWithOtp.otpCode, 'forgot-password');
+    await emailService.sendOtpEmailWithQueue(normalizedEmail, userWithOtp.otpCode, 'forgot-password');
 
     return true;
 };
