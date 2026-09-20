@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Background from '../components/layout/background';
 import Navbar from '../components/layout/navbar';
 import Header from '../components/layout/header';
@@ -120,7 +120,8 @@ const TopicsPage = () => {
                                 const title = topic.topicName || topic.title || 'Chủ đề';
 
                                 return (
-                                    <div
+                                    <Link
+                                        to={`/topics/${topic.id}`}
                                         key={topic.id || index}
                                         className="
                                             group relative flex h-28 sm:h-32 overflow-hidden rounded-2xl
@@ -154,7 +155,7 @@ const TopicsPage = () => {
 
                                             <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-slate-950/70 to-transparent" />
                                         </div>
-                                    </div>
+                                    </Link>
                                 );
                             })}
                         </div>

@@ -93,9 +93,45 @@ const deleteTopic = async (topicId) => {
     return topic;
 }
 
+const getTopicById = async (topicId) => {
+    const topic = await TopicRepository.getTopicById(topicId);
+    if (!topic) {
+        throw new Error("Không tìm thấy chủ đề");
+    }
+    return topic;
+};
+
+const getPlaylistsByTopic = async (topicId) => {
+    const topic = await TopicRepository.getTopicById(topicId);
+    if (!topic) {
+        throw new Error("Không tìm thấy chủ đề");
+    }
+    return await TopicRepository.getPlaylistsByTopicId(topicId);
+};
+
+const addPlaylistToTopic = async (topicId, playlistId) => {
+    const topic = await TopicRepository.getTopicById(topicId);
+    if (!topic) {
+        throw new Error("Không tìm thấy chủ đề");
+    }
+    return await TopicRepository.addPlaylistToTopic(topicId, playlistId);
+};
+
+const removePlaylistFromTopic = async (topicId, playlistId) => {
+    const topic = await TopicRepository.getTopicById(topicId);
+    if (!topic) {
+        throw new Error("Không tìm thấy chủ đề");
+    }
+    return await TopicRepository.removePlaylistFromTopic(topicId, playlistId);
+};
+
 module.exports = {
     createTopic,
     getAllTopics,
     updateTopic,
-    deleteTopic
+    deleteTopic,
+    getTopicById,
+    getPlaylistsByTopic,
+    addPlaylistToTopic,
+    removePlaylistFromTopic
 }

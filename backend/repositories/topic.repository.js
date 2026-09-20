@@ -2,7 +2,7 @@ const db = require("../models")
 const Topic = db.Topic
 
 const getTopicById = async (topicId) => {
-    return await Topic.findById(topicId);
+    return await Topic.findByPk(topicId);
 }
 
 const getTopicByName = async (topicName) => {
@@ -34,11 +34,39 @@ const deleteTopic = async (topic) => {
     return topic;
 }
 
+const getPlaylistsByTopicId = async (topicId) => {
+    return await db.Playlist.findAll({
+        where: { topicId },
+        include: [{ model: db.User, attributes: ['id', 'name', 'email'] }]
+    });
+};
+
+const addPlaylistToTopic = async (topicId, playlistId) => {
+    const playlist = await db.Playlist.findByPk(playlistId);
+    if (!playlist) {
+        throw new Error("Không tìm thấy playlist");
+    }
+    await playlist.update({ topicId });
+    return playlist;
+};
+
+const removePlaylistFromTopic = async (topicId, playlistId) => {
+    const playlist = await db.Playlist.findByPk(playlistId);
+    if (!playlist) {
+        throw new Error("Không tìm thấy playlist");
+    }
+    await playlist.update({ topicId: null });
+    return playlist;
+};
+
 module.exports = {
     getTopicById,
     getTopicByName,
     getAllTopics,
     createTopic,
     updateTopic,
-    deleteTopic
+    deleteTopic,
+    getPlaylistsByTopicId,
+    addPlaylistToTopic,
+    removePlaylistFromTopic
 }

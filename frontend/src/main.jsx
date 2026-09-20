@@ -7,6 +7,7 @@ import App from './App.jsx'
 import LoginPage from './pages/login'
 import RegisterPage from './pages/register'
 import TopicsPage from './pages/topics'
+import TopicDetailPage from './pages/topicDetail'
 
 
 const router = createBrowserRouter([
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/topics",
     element: <TopicsPage />,
+  },
+  {
+    path: "/topics/:topicId",
+    element: <TopicDetailPage />,
   }
 ])
 

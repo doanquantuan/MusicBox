@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     class Playlist extends Model {
         static associate(models) {
             Playlist.belongsTo(models.User, { foreignKey: 'userId' });
+            Playlist.belongsTo(models.Topic, { foreignKey: 'topicId', as: 'topic' });
         }
     }
 
