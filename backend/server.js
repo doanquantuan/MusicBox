@@ -16,6 +16,9 @@ import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
 import { notFound } from "./middlewares/notFound.middleware.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
+import "./workers/image.worker.js";
+import "./workers/audio.worker.js";
+import "./workers/email.worker.js";
 
 dotenv.config();
 
@@ -23,7 +26,19 @@ const app = express();
 const PORT = process.env.PORT || 8088;
 
 app.use(helmet());
-app.use(cors());
+// app.use(cors());
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            // Cho phép kết nối từ localhost (Development)
+            if (!origin || origin.includes("localhost")) {
+                return callback(null, true);
+            }
+            return callback(new Error("Not allowed by CORS"), false);
+        },
+        credentials: true, // Cho phép gửi Cookie
+    })
+);
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

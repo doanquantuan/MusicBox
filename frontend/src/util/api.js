@@ -24,11 +24,21 @@ const apiLogout = () => {
     return axios.post("api/auth/logout");
 };
 
+const apiGetTopics = () => {
+    return axios.get("api/topics");
+};
+
+const apiRefreshToken = () => {
+    return axios.post("api/auth/refresh");
+};
+
 export {
     apiLogin,
     apiRegister,
     apiVerifyOtp,
     apiResendOtp,
     apiGetAccount,
-    apiLogout
+    apiLogout,
+    apiGetTopics,
+    apiRefreshToken
 };

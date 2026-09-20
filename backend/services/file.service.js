@@ -62,7 +62,8 @@ const uploadImage = async (file) => {
         }
     );
 
-    const imageUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${s3Key}`;
+    const bucketName = process.env.AWS_S3_BUCKET_NAME || process.env.AWS_S3_BUCKET;
+    const imageUrl = `https://${bucketName}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${s3Key}`;
 
     return imageUrl
 };
@@ -270,7 +271,8 @@ const uploadAudio = async (file) => {
         }
     );
 
-    const playlistUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/audios/${audioId}/playlist.m3u8`;
+    const bucketName = process.env.AWS_S3_BUCKET_NAME || process.env.AWS_S3_BUCKET;
+    const playlistUrl = `https://${bucketName}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/audios/${audioId}/playlist.m3u8`;
 
     return playlistUrl;
 };

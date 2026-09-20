@@ -9,5 +9,7 @@ router.get("/", authenticate, playlistController.getAllPlaylists);
 router.post("/", authenticate, imageUpload.single("image"), playlistController.createPlaylist);
 router.put("/:playlistId", authenticate, imageUpload.single("image"), playlistController.updatePlaylist);
 router.delete("/:playlistId", authenticate, playlistController.deletePlaylist);
+router.post("/:playlistId/song", authenticate, playlistController.addSongToPlaylist);
+router.delete("/:playlistId/song/:songId", authenticate, playlistController.removeSongFromPlaylist);
 
 module.exports = router;

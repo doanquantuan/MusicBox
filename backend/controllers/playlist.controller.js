@@ -60,11 +60,42 @@ const deletePlaylist = async (req, res) => {
     }
 }
 
+const addSongToPlaylist = async (req, res) => {
+    try {
+        const result = await playlistService.addSongToPlaylist(req.params.playlistId, req.body.songId, req.user.id);
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const removeSongFromPlaylist = async (req, res) => {
+    try {
+        const result = await playlistService.removeSongFromPlaylist(req.params.playlistId, req.body.songId, req.user.id);
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
 
 
 module.exports = {
     createPlaylist,
     updatePlaylist,
     getAllPlaylists,
-    deletePlaylist
+    deletePlaylist,
+    addSongToPlaylist,
+    removeSongFromPlaylist
 }

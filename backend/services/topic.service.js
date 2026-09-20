@@ -97,4 +97,5 @@ module.exports = {
     createTopic,
     getAllTopics,
     updateTopic,
+    deleteTopic
 }

@@ -2,7 +2,7 @@ const { PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, DeleteObjec
 const s3Client = require("../config/s3");
 
 const uploadFile = async (fileBuffer, fileName, mimeType) => {
-    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    const bucketName = process.env.AWS_S3_BUCKET_NAME || process.env.AWS_S3_BUCKET;
     const region = process.env.AWS_REGION;
 
     if (!bucketName) {
@@ -31,7 +31,7 @@ const uploadFile = async (fileBuffer, fileName, mimeType) => {
 };
 
 const deleteFile = async (fileName) => {
-    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    const bucketName = process.env.AWS_S3_BUCKET_NAME || process.env.AWS_S3_BUCKET;
     if (!bucketName) {
         throw new Error("AWS_S3_BUCKET_NAME không được cấu hình");
     }
@@ -51,7 +51,7 @@ const deleteFile = async (fileName) => {
 };
 
 const deleteFolder = async (folderPrefix) => {
-    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    const bucketName = process.env.AWS_S3_BUCKET_NAME || process.env.AWS_S3_BUCKET;
     if (!bucketName) {
         throw new Error("AWS_S3_BUCKET_NAME không được cấu hình");
     }

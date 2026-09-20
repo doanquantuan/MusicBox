@@ -3,62 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import Background from '../components/layout/background';
 import Navbar from '../components/layout/navbar';
 import Header from '../components/layout/header';
+import Topic from '../components/context/topic';
 import { apiGetAccount } from '../util/api';
 import { Music, Mic, ShieldAlert, PlusCircle, ListMusic, Users, Disc, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Spin } from 'antd';
-
-const topicItems = [
-    {
-        title: 'Thư Giãn',
-        gradient: 'from-[#0072ff] via-[#00c6ff]/70 to-transparent',
-        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Buồn',
-        gradient: 'from-[#b33939] via-[#842a2a]/80 to-transparent',
-        image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Rap Việt',
-        gradient: 'from-[#3c40c6] via-[#575fcf]/80 to-transparent',
-        image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Bolero',
-        gradient: 'from-[#1e3799] via-[#0c2461]/80 to-transparent',
-        image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'TikTok',
-        gradient: 'from-[#2c3e50] via-[#1a252f]/55 to-transparent',
-        image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Pop Ballad',
-        gradient: 'from-[#e67e22] via-[#d35400]/80 to-transparent',
-        image: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Remix',
-        gradient: 'from-[#2e86de] via-[#48dbfb]/60 to-transparent',
-        image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Chill Out',
-        gradient: 'from-[#cd6133] via-[#b33939]/70 to-transparent',
-        image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Nhạc Trẻ',
-        gradient: 'from-[#10ac84] via-[#1dd1a1]/70 to-transparent',
-        image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-        title: 'Nhạc Hàn',
-        gradient: 'from-[#574b90] via-[#303952]/80 to-transparent',
-        image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&auto=format&fit=crop&q=80',
-    },
-];
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -143,38 +91,7 @@ const HomePage = () => {
                     </div>
 
                     {/* Section: Chủ Đề */}
-                    <div className="mb-10">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-2xl font-extrabold text-white tracking-tight">Chủ Đề</h2>
-                            <button className="text-xs font-semibold text-gray-400 hover:text-white transition-colors cursor-pointer">
-                                Thêm
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                            {topicItems.map((topic, index) => (
-                                <div
-                                    key={index}
-                                    className={`relative overflow-hidden rounded-2xl h-28 sm:h-32 bg-gradient-to-r ${topic.gradient} border border-white/10 p-4 flex flex-col justify-between cursor-pointer group hover:scale-[1.03] hover:border-white/20 transition-all duration-300 shadow-lg`}
-                                >
-                                    {/* Cover Image Positioned Right */}
-                                    <img
-                                        src={topic.image}
-                                        alt={topic.title}
-                                        className="absolute right-0 top-0 bottom-0 h-full w-3/5 object-cover object-center opacity-75 group-hover:scale-110 transition-transform duration-500 pointer-events-none mix-blend-overlay"
-                                    />
-
-                                    {/* Subtle Gradient Shadow Layer */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/40 to-transparent pointer-events-none z-0" />
-
-                                    {/* Topic Title */}
-                                    <span className="relative z-10 text-base sm:text-lg font-bold text-white tracking-wide drop-shadow-md">
-                                        {topic.title}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <Topic />
 
                     {/* Section: Dynamic Capabilities Based on Role */}
                     <div className="mb-6">
