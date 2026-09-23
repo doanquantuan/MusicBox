@@ -1,5 +1,8 @@
 const TopicRepository = require("../repositories/topic.repository");
+const PlaylistRepository = require("../repositories/playlist.repository");
+const PlaylistTopicRepository = require("../repositories/playlist_topic.repository");
 const FileService = require("./file.service");
+const db = require("../models");
 
 const createTopic = async (topicData, imageFile) => {
     const existingTopic = await TopicRepository.getTopicByName(topicData.topicName);
@@ -29,7 +32,7 @@ const updateTopic = async (topicId, topicData, imageFile) => {
         throw new Error("Không tìm thấy chủ đề")
     }
 
-    let imageUrl = existingArtist.imageUrl;
+    let imageUrl = existingTopic.imageUrl;
     let uploadSuccess = false;
 
     if (imageFile) {
@@ -38,7 +41,7 @@ const updateTopic = async (topicId, topicData, imageFile) => {
             uploadSuccess = true;
         } catch (error) {
             console.error("Upload ảnh mới thất bại, giữ nguyên ảnh cũ:", error.message);
-            imageUrl = existingArtist.imageUrl;
+            imageUrl = existingTopic.imageUrl;
         }
     }
 
@@ -110,19 +113,42 @@ const getPlaylistsByTopic = async (topicId) => {
 };
 
 const addPlaylistToTopic = async (topicId, playlistId) => {
+    if (!topicId || !playlistId) {
+        throw new Error("topicId và playlistId là bắt buộc");
+    }
     const topic = await TopicRepository.getTopicById(topicId);
     if (!topic) {
         throw new Error("Không tìm thấy chủ đề");
+    }
+    const playlist = await PlaylistRepository.getPlaylistById(playlistId);
+    if (!playlist) {
+        throw new Error("Không tìm thấy playlist");
+    }
+    const existing = await PlaylistTopicRepository.findPlaylistTopic(topicId, playlistId);
+    if (existing) {
+        throw new Error("Playlist đã tồn tại trong chủ đề này");
     }
     return await TopicRepository.addPlaylistToTopic(topicId, playlistId);
 };
 
 const removePlaylistFromTopic = async (topicId, playlistId) => {
+    if (!topicId || !playlistId) {
+        throw new Error("topicId và playlistId là bắt buộc");
+    }
     const topic = await TopicRepository.getTopicById(topicId);
     if (!topic) {
         throw new Error("Không tìm thấy chủ đề");
     }
-    return await TopicRepository.removePlaylistFromTopic(topicId, playlistId);
+    const playlist = await PlaylistRepository.getPlaylistById(playlistId);
+    if (!playlist) {
+        throw new Error("Không tìm thấy playlist");
+    }
+    const existing = await PlaylistTopicRepository.findPlaylistTopic(topicId, playlistId);
+    if (!existing) {
+        throw new Error("Playlist không thuộc chủ đề này");
+    }
+    await TopicRepository.removePlaylistFromTopic(topicId, playlistId);
+    return { topicId, playlistId };
 };
 
 module.exports = {

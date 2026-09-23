@@ -23,7 +23,13 @@ const updatePlaylist = async (req, res) => {
             data: result
         });
     } catch (error) {
-        res.status(500).json({
+        let statusCode = 400;
+        if (error.message.includes("Không tìm thấy")) {
+            statusCode = 404;
+        } else if (error.message.includes("của bạn")) {
+            statusCode = 403;
+        }
+        res.status(statusCode).json({
             success: false,
             message: error.message
         });

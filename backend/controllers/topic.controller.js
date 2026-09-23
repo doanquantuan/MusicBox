@@ -93,7 +93,7 @@ const getPlaylistsByTopic = async (req, res) => {
 const addPlaylistToTopic = async (req, res) => {
     try {
         const topicId = req.params.topicId;
-        const playlistId = req.params.playlistId || req.body.playlistId;
+        const playlistId = req.params.playlistId || req.body?.playlistId;
         const result = await topicService.addPlaylistToTopic(topicId, playlistId);
         res.status(200).json({
             success: true,
@@ -101,7 +101,13 @@ const addPlaylistToTopic = async (req, res) => {
             data: result
         });
     } catch (error) {
-        res.status(500).json({
+        let statusCode = 400;
+        if (error.message.includes("Không tìm thấy")) {
+            statusCode = 404;
+        } else if (error.message.includes("đã tồn tại")) {
+            statusCode = 409;
+        }
+        res.status(statusCode).json({
             success: false,
             message: error.message
         });
@@ -110,7 +116,8 @@ const addPlaylistToTopic = async (req, res) => {
 
 const removePlaylistFromTopic = async (req, res) => {
     try {
-        const { topicId, playlistId } = req.params;
+        const topicId = req.params.topicId;
+        const playlistId = req.params.playlistId || req.body?.playlistId;
         const result = await topicService.removePlaylistFromTopic(topicId, playlistId);
         res.status(200).json({
             success: true,
@@ -118,7 +125,11 @@ const removePlaylistFromTopic = async (req, res) => {
             data: result
         });
     } catch (error) {
-        res.status(500).json({
+        let statusCode = 400;
+        if (error.message.includes("Không tìm thấy")) {
+            statusCode = 404;
+        }
+        res.status(statusCode).json({
             success: false,
             message: error.message
         });

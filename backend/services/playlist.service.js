@@ -1,6 +1,7 @@
 const PlaylistRepository = require("../repositories/playlist.repository");
 const PlaylistSongRepository = require("../repositories/playlist_song.repository");
 const FileService = require("./file.service");
+const db = require("../models");
 
 const getSongsByPlaylist = async (playlistId) => {
     try {
@@ -41,24 +42,26 @@ const updatePlaylist = async (userId, playlistData, imageFile, playlistId) => {
             uploadSuccess = true;
         } catch (error) {
             console.error("Upload ảnh mới thất bại, giữ nguyên ảnh cũ:", error.message);
-            imageUrl = existingArtist.imageUrl;
+            imageUrl = existingPlaylist.imageUrl;
         }
     }
 
     const t = await db.sequelize.transaction();
 
     try {
-        const updatedPlaylist = await PlaylistRepository.updatePlaylist(playlistId, { ...playlistData, imageUrl }, { transaction: t });
+        await PlaylistRepository.updatePlaylist(playlistId, { ...playlistData, imageUrl }, { transaction: t });
         await t.commit();
 
         if (uploadSuccess && existingPlaylist.imageUrl) {
-            await FileService.deleteFile(existingPlaylist.imageUrl);
+            await FileService.deleteImage(existingPlaylist.imageUrl);
         }
 
-        return updatedPlaylist;
+        const playlist = await PlaylistRepository.getPlaylistById(playlistId);
+
+        return playlist;
     } catch (error) {
         await t.rollback();
-        if (imageFile && uploadSuccess && imageUrl && imageUrl !== existingTopic.imageUrl) {
+        if (imageFile && uploadSuccess && imageUrl && imageUrl !== existingPlaylist.imageUrl) {
             try {
                 await FileService.deleteImage(imageUrl);
             } catch (err) {
@@ -89,7 +92,7 @@ const deletePlaylist = async (playlistId) => {
 
     if (playlist.imageUrl) {
         try {
-            await FileService.deleteFile(playlist.imageUrl);
+            await FileService.deleteImage(playlist.imageUrl);
         } catch (err) {
             console.error("Xóa ảnh cũ thất bại:", err.message);
         }

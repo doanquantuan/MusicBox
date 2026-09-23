@@ -34,29 +34,18 @@ const deleteTopic = async (topic) => {
     return topic;
 }
 
+const playlistTopicRepository = require("./playlist_topic.repository");
+
 const getPlaylistsByTopicId = async (topicId) => {
-    return await db.Playlist.findAll({
-        where: { topicId },
-        include: [{ model: db.User, attributes: ['id', 'name', 'email'] }]
-    });
+    return await playlistTopicRepository.getPlaylistsByTopicId(topicId);
 };
 
 const addPlaylistToTopic = async (topicId, playlistId) => {
-    const playlist = await db.Playlist.findByPk(playlistId);
-    if (!playlist) {
-        throw new Error("Không tìm thấy playlist");
-    }
-    await playlist.update({ topicId });
-    return playlist;
+    return await playlistTopicRepository.addPlaylistToTopic(topicId, playlistId);
 };
 
 const removePlaylistFromTopic = async (topicId, playlistId) => {
-    const playlist = await db.Playlist.findByPk(playlistId);
-    if (!playlist) {
-        throw new Error("Không tìm thấy playlist");
-    }
-    await playlist.update({ topicId: null });
-    return playlist;
+    return await playlistTopicRepository.removePlaylistFromTopic(topicId, playlistId);
 };
 
 module.exports = {
