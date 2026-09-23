@@ -8,7 +8,7 @@ import LoginPage from './pages/login'
 import RegisterPage from './pages/register'
 import TopicsPage from './pages/topics'
 import TopicDetailPage from './pages/topicDetail'
-
+import PlaylistDetailPage from './pages/playlistDetail'
 
 const router = createBrowserRouter([
   {
@@ -30,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: "/topics/:topicId",
     element: <TopicDetailPage />,
+  },
+  {
+    path: "/playlists/:playlistId",
+    element: <PlaylistDetailPage />,
   }
 ])
 

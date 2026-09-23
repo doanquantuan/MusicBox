@@ -1,6 +1,7 @@
 const PlaylistRepository = require("../repositories/playlist.repository");
 const PlaylistSongRepository = require("../repositories/playlist_song.repository");
 const FileService = require("./file.service");
+const SongRepository = require("../repositories/song.repository");
 const db = require("../models");
 
 const getSongsByPlaylist = async (playlistId) => {
@@ -128,7 +129,7 @@ const addSongToPlaylist = async (playlistId, songId, userId) => {
 
     const position = (maxPosition || 0) + 1;
 
-    await PlaylistSongRepository.createPlaylistSong({
+    await PlaylistSongRepository.addSongToPlaylist({
         playlistId,
         songId,
         position,
@@ -172,7 +173,27 @@ const removeSongFromPlaylist = async (playlistId, songId, userId) => {
     }
 };
 
+const getSongsInPlaylist = async (playlistId) => {
+    try {
+        const playlist = await PlaylistRepository.getPlaylistById(playlistId);
+        if (!playlist) {
+            throw new Error("Không tìm thấy playlist");
+        }
 
+        const songs = await PlaylistSongRepository.getSongsByPlaylist(playlistId);
+        return songs;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getPlaylistById = async (playlistId) => {
+    const playlist = await PlaylistRepository.getPlaylistById(playlistId);
+    if (!playlist) {
+        throw new Error("Không tìm thấy playlist");
+    }
+    return playlist;
+};
 
 module.exports = {
     getSongsByPlaylist,
@@ -181,5 +202,7 @@ module.exports = {
     getAllPlaylist,
     deletePlaylist,
     addSongToPlaylist,
-    removeSongFromPlaylist
+    removeSongFromPlaylist,
+    getSongsInPlaylist,
+    getPlaylistById
 }

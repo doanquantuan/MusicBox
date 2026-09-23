@@ -2,7 +2,27 @@ const db = require("../models");
 const PlaylistSong = db.PlaylistSong;
 const { Op } = require("sequelize");
 
-const getSongsByPlaylist = async (playlistId) => await PlaylistSong.findAll({ where: { playlistId }, order: [['position', 'ASC']] });
+const getSongsByPlaylist = async (playlistId) => await PlaylistSong.findAll({
+    where: { playlistId },
+    include: [
+        {
+            model: db.Song,
+            include: [
+                {
+                    model: db.Artist,
+                    as: 'artists',
+                    attributes: ['id', 'artistName', 'imageUrl'],
+                    through: { attributes: [] }
+                },
+                {
+                    model: db.Album,
+                    attributes: ['id', 'albumName', 'coverImgUrl']
+                }
+            ]
+        }
+    ],
+    order: [['position', 'ASC']]
+});
 const addSongToPlaylist = async (data) => await PlaylistSong.create(data);
 const removeSongFromPlaylist = async (playlistId, songId, options) => await PlaylistSong.destroy({ where: { playlistId, songId }, options });
 

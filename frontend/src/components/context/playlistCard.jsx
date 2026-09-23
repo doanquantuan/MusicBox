@@ -32,7 +32,7 @@ const PlaylistCard = ({ playlist, onClick, to }) => {
                     }}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                
+
                 {/* Overlay nút Play khi hover */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-300">
@@ -57,9 +57,11 @@ const PlaylistCard = ({ playlist, onClick, to }) => {
         </div>
     );
 
-    if (to) {
+    const targetUrl = to || (playlist.id ? `/playlists/${playlist.id}` : null);
+
+    if (targetUrl) {
         return (
-            <Link to={to} className="block h-full">
+            <Link to={targetUrl} className="block h-full">
                 {CardContent}
             </Link>
         );

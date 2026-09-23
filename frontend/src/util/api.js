@@ -44,6 +44,14 @@ const apiRemovePlaylistFromTopic = (topicId, playlistId) => {
     return axios.delete(`api/topics/${topicId}/playlists/${playlistId}`);
 };
 
+const apiGetPlaylistById = (playlistId) => {
+    return axios.get(`api/playlists/${playlistId}`);
+};
+
+const apiGetSongsInPlaylist = (playlistId) => {
+    return axios.get(`api/playlists/${playlistId}/songs`);
+};
+
 const apiRefreshToken = () => {
     return axios.post("api/auth/refresh");
 };
@@ -60,5 +68,7 @@ export {
     apiGetPlaylistsByTopic,
     apiAddPlaylistToTopic,
     apiRemovePlaylistFromTopic,
-    apiRefreshToken
+    apiRefreshToken,
+    apiGetPlaylistById,
+    apiGetSongsInPlaylist
 };

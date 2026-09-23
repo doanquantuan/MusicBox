@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Background from '../components/layout/background';
 import Navbar from '../components/layout/navbar';
 import Header from '../components/layout/header';
-import PlaylistCard from '../components/playlistCard';
+import PlaylistCard from '../components/context/playlistCard';
 import { apiGetAccount, apiGetTopicById, apiGetPlaylistsByTopic } from '../util/api';
 import { ArrowLeft, ListMusic } from 'lucide-react';
 import { Spin } from 'antd';

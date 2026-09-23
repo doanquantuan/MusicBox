@@ -96,6 +96,40 @@ const removeSongFromPlaylist = async (req, res) => {
     }
 }
 
+const getSongsInPlaylist = async (req, res) => {
+    try {
+        const result = await playlistService.getSongsInPlaylist(req.params.playlistId);
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+
+const getPlaylistById = async (req, res) => {
+    try {
+        const result = await playlistService.getPlaylistById(req.params.playlistId);
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        let statusCode = 400;
+        if (error.message.includes("Không tìm thấy")) {
+            statusCode = 404;
+        }
+        res.status(statusCode).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
 
 module.exports = {
     createPlaylist,
@@ -103,5 +137,7 @@ module.exports = {
     getAllPlaylists,
     deletePlaylist,
     addSongToPlaylist,
-    removeSongFromPlaylist
+    removeSongFromPlaylist,
+    getSongsInPlaylist,
+    getPlaylistById
 }

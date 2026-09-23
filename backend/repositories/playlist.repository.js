@@ -1,7 +1,10 @@
 const db = require("../models");
 const Playlist = db.Playlist;
 
-const getPlaylistById = async (id) => await Playlist.findByPk(id);
+const getPlaylistById = async (id, options = {}) => await Playlist.findByPk(id, {
+    include: [{ model: db.User, attributes: ['id', 'name', 'email'] }],
+    ...options
+});
 const getPlaylistsByUser = async (userId) => await Playlist.findAll({ where: { userId } });
 const createPlaylist = async (playlistData) => {
     const playlist = await Playlist.create(playlistData);
