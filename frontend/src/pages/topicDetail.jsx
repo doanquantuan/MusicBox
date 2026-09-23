@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Background from '../components/layout/background';
 import Navbar from '../components/layout/navbar';
 import Header from '../components/layout/header';
+import PlaylistCard from '../components/playlistCard';
 import { apiGetAccount, apiGetTopicById, apiGetPlaylistsByTopic } from '../util/api';
-import { Music, ArrowLeft, Layers, ListMusic, Play, User } from 'lucide-react';
+import { ArrowLeft, ListMusic } from 'lucide-react';
 import { Spin } from 'antd';
 
 const FALLBACK_TOPIC_IMAGES = [
@@ -12,13 +13,6 @@ const FALLBACK_TOPIC_IMAGES = [
     'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&auto=format&fit=crop&q=80',
     'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop&q=80',
     'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80',
-];
-
-const FALLBACK_PLAYLIST_IMAGES = [
-    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400&auto=format&fit=crop&q=80',
 ];
 
 const TopicDetailPage = () => {
@@ -161,51 +155,9 @@ const TopicDetailPage = () => {
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-                            {playlists.map((playlist, index) => {
-                                const playlistImage = playlist.imageUrl || FALLBACK_PLAYLIST_IMAGES[index % FALLBACK_PLAYLIST_IMAGES.length];
-                                const playlistName = playlist.playlistName || playlist.name || 'Playlist';
-                                const authorName = playlist.User?.name || 'MusicBox';
-
-                                return (
-                                    <div
-                                        key={playlist.id || index}
-                                        className="
-                                            group relative flex flex-col overflow-hidden rounded-2xl
-                                            bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20
-                                            backdrop-blur-md cursor-pointer shadow-lg p-3.5
-                                            transition-all duration-300 hover:-translate-y-1.5
-                                        "
-                                    >
-                                        {/* Cover Image */}
-                                        <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-3 bg-white/5">
-                                            <img
-                                                src={playlistImage}
-                                                alt={playlistName}
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.target.src = FALLBACK_PLAYLIST_IMAGES[index % FALLBACK_PLAYLIST_IMAGES.length];
-                                                }}
-                                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                            />
-                                            {/* Hover Play Overlay */}
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                                <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-                                                    <Play size={18} fill="white" className="ml-0.5" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Info */}
-                                        <h3 className="text-sm font-bold text-white tracking-wide truncate mb-1">
-                                            {playlistName}
-                                        </h3>
-                                        <p className="text-xs text-gray-400 flex items-center gap-1 truncate">
-                                            <User size={12} />
-                                            {authorName}
-                                        </p>
-                                    </div>
-                                );
-                            })}
+                            {playlists.map((playlist, index) => (
+                                <PlaylistCard key={playlist.id || index} playlist={playlist} />
+                            ))}
                         </div>
                     )}
                 </main>
